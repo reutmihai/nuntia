@@ -13,9 +13,13 @@ export default function PublicCalendar({
   onAddRequest 
 }: PublicCalendarProps) {
   
-  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const currentDate = today.getDate();
+
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
   
   // Stări pentru modalul formularului
   const [showFormModal, setShowFormModal] = useState(false);
@@ -23,7 +27,7 @@ export default function PublicCalendar({
   const [clientNameInput, setClientNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
   const [guestsInput, setGuestsInput] = useState(150);
-  const [menuInput, setMenuInput] = useState('Standard (75€)');
+  const [menuInput, setMenuInput] = useState('Standard');
   const [budgetInput, setBudgetInput] = useState('10.000€ - 15.000€');
   const [messageInput, setMessageInput] = useState('');
 
@@ -35,7 +39,9 @@ export default function PublicCalendar({
   ];
 
   const weekdays = ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du'];
-  const yearsList = Array.from({ length: 4 }, (_, index) => currentYear + index);
+  
+  // Generăm o listă de 10 ani în viitor începând cu anul curent
+  const yearsList = Array.from({ length: 10 }, (_, index) => currentYear + index);
 
   const getDaysInMonth = (year: number, monthIndex: number) => {
     const days = [];
@@ -95,14 +101,14 @@ export default function PublicCalendar({
             <select 
               value={selectedYear} 
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none"
+              className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none cursor-pointer"
             >
               {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
             <select 
               value={selectedMonth} 
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none"
+              className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none cursor-pointer"
             >
               {months.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
@@ -120,30 +126,42 @@ export default function PublicCalendar({
             if (day === null) return <div key={`empty-${idx}`} className="h-20" />;
             
             const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Verificare dacă data verificată aparține trecutului
+            const isPast = 
+              selectedYear < currentYear || 
+              (selectedYear === currentYear && selectedMonth < currentMonth) || 
+              (selectedYear === currentYear && selectedMonth === currentMonth && day < currentDate);
+
             const isOcupat = confirmedEvents.some(e => e.date === dateStr);
             const isPending = bookingRequests.some(r => r.date === dateStr);
+
+            // Dezactivăm butonul dacă e ocupat SAU dacă a trecut deja data
+            const isDisabled = isOcupat || isPast;
 
             return (
               <button
                 key={day}
-                disabled={isOcupat}
+                disabled={isDisabled}
                 onClick={() => {
                   setSelectedDateForRequest(dateStr);
                   setShowFormModal(true);
                 }}
                 className={`h-20 p-3 rounded-2xl border text-left flex flex-col justify-between transition-all group relative ${
-                  isOcupat 
-                    ? 'bg-red-950/10 border-red-900/30 text-red-400/50 cursor-not-allowed'
-                    : isPending
-                      ? 'bg-amber-950/20 border-amber-900/40 text-amber-400'
-                      : 'bg-zinc-950/50 border-white/5 hover:border-white/30 hover:bg-zinc-900 text-white'
+                  isPast
+                    ? 'bg-zinc-950/20 border-zinc-900 text-zinc-600 cursor-not-allowed opacity-40 line-through'
+                    : isOcupat 
+                      ? 'bg-red-950/10 border-red-900/30 text-red-400/50 cursor-not-allowed'
+                      : isPending
+                        ? 'bg-amber-950/20 border-amber-900/40 text-amber-400'
+                        : 'bg-zinc-950/50 border-white/5 hover:border-white/30 hover:bg-zinc-900 text-white'
                 }`}
               >
                 <span className="text-sm font-semibold">{day}</span>
                 <span className={`text-[9px] uppercase tracking-wider font-semibold ${
-                  isOcupat ? 'text-red-500' : isPending ? 'text-amber-400' : 'text-zinc-400 group-hover:text-white'
+                  isPast ? 'text-zinc-600 no-underline inline-block' : isOcupat ? 'text-red-500' : isPending ? 'text-amber-400' : 'text-zinc-400 group-hover:text-white'
                 }`}>
-                  {isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă'}
+                  {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă'}
                 </span>
               </button>
             );
@@ -192,15 +210,15 @@ export default function PublicCalendar({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Preferință Meniu</label>
-                  <select value={menuInput} onChange={(e) => setMenuInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs">
-                    <option>Standard (75€)</option>
-                    <option>Premium (95€)</option>
-                    <option>Exclusive (120€)</option>
+                  <select value={menuInput} onChange={(e) => setMenuInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs cursor-pointer">
+                    <option>Standard</option>
+                    <option>Premium</option>
+                    <option>Exclusive</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Buget Estimat</label>
-                  <select value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs">
+                  <select value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs cursor-pointer">
                     <option>10.000€ - 15.000€</option>
                     <option>15.000€ - 20.000€</option>
                     <option>20.000€ +</option>
