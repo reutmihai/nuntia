@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PublicCalendar from './components/PublicCalendar';
-import AdminInbox from './components/ADminInbox';
+import AdminInbox from './components/AdminInbox';
 import ConfirmedEvents from './components/ConfirmedEvents';
 
 // Structurile de date de bază (folosite în aplicație)
@@ -140,16 +140,16 @@ function App() {
           </div>
 
           {/* Comutator pentru simularea rutei */}
-          <div className="flex p-1 gap-2 rounded-xl text-xs bg-black/40 border border-white/5">
+          <div className="flex p-1 gap-3 rounded-xl text-xs">
             <button 
               onClick={() => setViewMode('public')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'public' ? 'bg-white text-zinc-950 font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'public' ? 'font-semibold' : 'hover:text-zinc-200'}`}
             >
               Home
             </button>
             <button 
               onClick={() => setViewMode('admin')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'admin' ? 'bg-white text-zinc-950 font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'admin' ? 'font-semibold' : 'hover:text-zinc-200'}`}
             >
               Dashboard Manager
             </button>
