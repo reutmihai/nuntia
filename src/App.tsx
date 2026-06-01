@@ -1,7 +1,8 @@
 // src/App.tsx
 import { useState } from 'react';
+import PublicCalendar from './components/PublicCalendar';
 
-// Structurile de date de bază (folosite ulterior în componente separate)
+// Structurile de date de bază (folosite în aplicație)
 export interface BookingRequest {
   id: string;
   date: string;
@@ -21,6 +22,8 @@ export interface ConfirmedEvent {
 }
 
 function App() {
+  const currentYear = new Date().getFullYear();
+
   // Configurația de bază a restaurantului
   const restaurantConfig = {
     name: "Ballroom",
@@ -30,10 +33,36 @@ function App() {
   // Starea pentru navigarea principală între interfețe
   const [viewMode, setViewMode] = useState<'public' | 'admin'>('public');
 
+  // --- STĂRI GLOBALE PENTRU DATE ---
+  // State pentru evenimentele deja CONFIRMATE (zile blocate cu roșu)
+  const [confirmedEvents, setConfirmedEvents] = useState<ConfirmedEvent[]>([
+    { id: 'e1', date: `${currentYear}-06-20`, clientName: 'Andrei & Elena', guests: 250 },
+    { id: 'e2', date: `${currentYear}-09-12`, clientName: 'Mihai & Maria', guests: 300 },
+  ]);
+
+  // State pentru CERERILE noi de ofertă trimise de miri
+  const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([
+    { 
+      id: 'r1', 
+      date: `${currentYear}-07-18`, 
+      clientName: 'Cosmin & Alina', 
+      phone: '0740123456', 
+      guests: 180,
+      menuPreference: 'Premium (95€)',
+      estimatedBudget: '15.000€ - 20.000€',
+      message: 'Doresc detalii despre pachetul de lumini.' 
+    }
+  ]);
+
+  // Funcție pentru adăugarea unei cereri noi din formularul public
+  const handleAddRequest = (newRequest: BookingRequest) => {
+    setBookingRequests((prevRequests) => [...prevRequests, newRequest]);
+  };
+
   return (
     <div className="w-full min-h-screen bg-zinc-950 text-zinc-100 antialiased font-sans relative pb-12">
       
-      {/* Top Navigation Bar - Structura de bază pentru simulare */}
+      {/* Top Navigation Bar */}
       <div className="bg-zinc-900 border-b border-white/10 sticky top-0 z-30 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -47,13 +76,13 @@ function App() {
           <div className="flex p-1 gap-2 rounded-xl text-xs">
             <button 
               onClick={() => setViewMode('public')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'public' ? 'bg-white text-white font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'public' ? 'bg-white text-zinc-950 font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
             >
               Home
             </button>
             <button 
               onClick={() => setViewMode('admin')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'admin' ? 'bg-white text-white font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'admin' ? 'bg-white text-zinc-950 font-semibold' : 'text-zinc-400 hover:text-zinc-200'}`}
             >
               Dashboard Manager
             </button>
@@ -61,17 +90,15 @@ function App() {
         </div>
       </div>
 
-      {/* Spațiul de lucru pentru viitoarele componente */}
+      {/* Spațiul de lucru pentru componente */}
       <main className="max-w-7xl mx-auto px-6 py-12">
         {viewMode === 'public' ? (
-          <div className="text-center py-20 space-y-4">
-            <h1 className="text-4xl font-extralight uppercase tracking-widest text-white">
-              Planifică Nunta Ta
-            </h1>
-            <p className="text-sm text-zinc-400 font-light max-w-md mx-auto leading-relaxed">
-              Modulul pentru clienți și calendarul public vor fi dezvoltate pe un branch dedicat.
-            </p>
-          </div>
+          // Pasăm stările și funcția de adăugare către componenta izolată a calendarului
+          <PublicCalendar 
+            confirmedEvents={confirmedEvents}
+            bookingRequests={bookingRequests}
+            onAddRequest={handleAddRequest}
+          />
         ) : (
           <div className="text-center py-20 space-y-4">
             <h1 className="text-4xl font-extralight uppercase tracking-widest text-white">
