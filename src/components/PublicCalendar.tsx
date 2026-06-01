@@ -234,7 +234,7 @@ export default function PublicCalendar({
                 />
               </div>
 
-              <button type="submit" className="w-full bg-white text-black py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] mt-2 hover:bg-zinc-200 transition-colors">
+              <button type="submit" className="w-full bg-white text-black py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] mt-2 hover:bg-white transition-colors">
                 Trimite Cererea de Ofertă
               </button>
             </form>

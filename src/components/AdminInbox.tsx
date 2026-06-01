@@ -62,7 +62,7 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                 </button>
                 <button 
                   onClick={() => onApprove(req)}
-                  className="flex-1 bg-white text-black font-bold py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
+                  className="flex-1 bg-green-500 text-blackl font-bold py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
                 >
                   Aprobă
                 </button>
