@@ -1,7 +1,7 @@
 import { ConfirmedEvent } from '../App';
 
 interface ConfirmedEventsProps {
-  confirmedEvents: (ConfirmedEvent & { pricePerMeniu?: number })[];
+  confirmedEvents: ConfirmedEvent[];
   onCancelEvent: (id: string) => void;
 }
 
@@ -10,60 +10,95 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
     <div className="bg-zinc-900/60 border border-white/10 p-6 rounded-3xl space-y-6 shadow-lg backdrop-blur-sm">
       <div>
         <h3 className="text-lg uppercase tracking-wider font-light text-white">
-          Gestiune Contracte & Date Ocupate ({confirmedEvents.length})
+          Evenimente Confirmate ({confirmedEvents.length})
         </h3>
         <p className="text-xs text-zinc-400 mt-1">
-          Vizualizează evenimentele confirmate, prețul final negociat sau eliberează datele din calendar.
+          Contracte semnate și date blocate definitiv în calendar.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto max-h-[580px] pr-1">
-        {confirmedEvents.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic py-4 text-center col-span-2">
-            Nu există nicio nuntă confirmată în calendar.
-          </p>
-        ) : (
-          confirmedEvents.map(event => (
-            <div key={event.id} className="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col justify-between gap-5 border-l-2 border-l-emerald-500 transition-all hover:border-l-white">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-white font-semibold font-mono">📅 {event.date}</span>
-                  <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/40">
-                    Confirmat
-                  </span>
-                </div>
-                <h4 className="text-white text-base font-light tracking-wide uppercase pt-1">
-                  {event.clientName}
-                </h4>
-                <div className="space-y-1 pt-1 border-t border-white/5">
-                  <p className="text-xs text-zinc-300 font-medium">👥 Dimensiune: {event.guests} invitați</p>
-                  <p className="text-xs text-zinc-300 font-medium">
-                    💰 Meniu agreat: <span className="text-emerald-400 font-semibold">{event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'În curs de stabilire'}</span>
-                  </p>
-                  <p className="text-xs text-zinc-300 font-medium flex items-center gap-1.5">
-                    <span>📞 Contact:</span> 
-                    <span className="text-white font-mono font-semibold">{event.phone}</span>
-                  </p>
-                </div>
-              </div>
+      <div className="overflow-x-auto rounded-2xl border border-white/5 bg-black/40">
+        <table className="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr className="border-b border-white/10 bg-zinc-950 text-zinc-400 uppercase tracking-wider text-[10px]">
+              <th className="p-4 font-medium">Dată / Salon</th>
+              <th className="p-4 font-medium">Client / Contact</th>
+              <th className="p-4 font-medium text-center">Invitați</th>
+              <th className="p-4 font-medium">Preț Meniu</th>
+              <th className="p-4 font-medium">Servicii Extra</th>
+              <th className="p-4 font-medium text-right">Acțiuni</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {confirmedEvents.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-zinc-500 italic">
+                  Niciun eveniment confirmat în listă.
+                </td>
+              </tr>
+            ) : (
+              confirmedEvents.map((event) => (
+                <tr key={event.id} className="hover:bg-white/[0.02] transition-colors">
+                  
+                  {/* DATĂ ȘI SALON */}
+                  <td className="p-4 whitespace-nowrap">
+                    <span className="bg-zinc-800 text-white font-mono px-2.5 py-1 rounded-lg border border-white/10 text-[11px] block w-fit">
+                      {event.date}
+                    </span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-zinc-900 border border-white/5 text-zinc-400 rounded mt-1.5 inline-block">
+                      {event.salonName}
+                    </span>
+                  </td>
 
-              <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
-                <a 
-                  href={`tel:${event.phone}`}
-                  className="w-full bg-white text-black hover:bg-zinc-200 py-2.5 rounded-xl uppercase tracking-widest text-[10px] font-bold text-center block transition-colors"
-                >
-                  📞 Contactează Mirii
-                </a>
-                <button 
-                  onClick={() => onCancelEvent(event.id)}
-                  className="w-full bg-transparent border border-red-900/40 hover:border-red-500/50 text-red-400 hover:text-red-300 py-2 rounded-xl uppercase tracking-widest text-[9px] transition-all font-bold"
-                >
-                  🚫 Anulează Contract
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+                  {/* CLIENT ȘI CONTACT */}
+                  <td className="p-4">
+                    <div className="font-semibold text-white text-sm">{event.clientName}</div>
+                    <div className="text-zinc-400 font-mono mt-0.5">{event.phone}</div>
+                  </td>
+
+                  {/* INVITAȚI */}
+                  <td className="p-4 text-center font-medium text-zinc-300 whitespace-nowrap">
+                    {event.guests} pers.
+                  </td>
+
+                  {/* PREȚ MENIU */}
+                  <td className="p-4 font-semibold text-emerald-400 whitespace-nowrap">
+                    {event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'Nespecificat'}
+                  </td>
+
+                  {/* SERVICII EXTRA */}
+                  <td className="p-4 max-w-[200px]">
+                    {event.extraServices && event.extraServices.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {event.extraServices.map((service, idx) => (
+                          <span 
+                            key={idx} 
+                            className="bg-zinc-950 border border-white/5 text-zinc-400 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-zinc-600 italic text-[11px]">Fără extra opțiuni</span>
+                    )}
+                  </td>
+
+                  {/* BUTON ANULARE */}
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => onCancelEvent(event.id)}
+                      className="bg-zinc-950 hover:bg-red-950/40 border border-white/10 hover:border-red-900/50 text-zinc-400 hover:text-red-400 px-3 py-1.5 rounded-xl transition-all uppercase tracking-wider text-[10px]"
+                    >
+                      Anulează
+                    </button>
+                  </td>
+
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
