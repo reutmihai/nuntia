@@ -22,10 +22,19 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
         ) : (
           bookingRequests.map(req => (
             <div key={req.id} className="bg-black/50 border border-white/5 p-4 rounded-2xl space-y-3 text-xs">
+              
+              {/* ZONA DE SUS ACTUALIZATĂ CU BADGE DE SALON */}
               <div className="flex justify-between items-start gap-2">
                 <div>
-                  <h4 className="text-white font-semibold text-sm">{req.clientName}</h4>
-                  <p className="text-zinc-400 mt-0.5 font-medium">📞 {req.phone}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="text-white font-semibold text-sm">{req.clientName}</h4>
+                    
+                    {/* BADGE SALON SELECTAT */}
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-zinc-800 border border-white/10 text-zinc-300 rounded-md">
+                      {req.salonName || 'Nespecificat'}
+                    </span>
+                  </div>
+                  <p className="text-zinc-400 mt-1 font-medium">📞 {req.phone}</p>
                 </div>
                 <span className="bg-zinc-800 text-white font-mono px-2.5 py-1 rounded-lg border border-white/10 whitespace-nowrap">
                   {req.date}
@@ -41,6 +50,21 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                   <span className="text-zinc-400 block font-light">Meniu:</span> 
                   <span className="text-white font-semibold">{req.menuPreference}</span>
                 </div>
+                
+                {/* RENDAM SERVICIILE EXTRA DACĂ EXISTĂ */}
+                {req.extraServices && req.extraServices.length > 0 && (
+                  <div className="col-span-2 mt-1 pt-2 border-t border-white/5">
+                    <span className="text-zinc-400 block font-light mb-1">Servicii Extra:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {req.extraServices.map((service, idx) => (
+                        <span key={idx} className="bg-zinc-900 border border-white/5 text-zinc-400 px-2 py-0.5 rounded text-[10px]">
+                          {service}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="col-span-2 mt-1 pt-1 border-t border-white/5">
                   <span className="text-zinc-400 font-light">Buget Estimat:</span> 
                   <span className="text-emerald-400 font-bold block">{req.estimatedBudget}</span>
@@ -62,7 +86,7 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                 </button>
                 <button 
                   onClick={() => onApprove(req)}
-                  className="flex-1 bg-green-500 text-blackl font-bold py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
+                  className="flex-1 bg-green-500 text-black font-bold py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
                 >
                   Aprobă
                 </button>
