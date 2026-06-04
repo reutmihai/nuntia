@@ -35,34 +35,6 @@ function App() {
     location: "Suceava"
   };
 
-  // Datele pentru Saloane
-const SALOANE = [
-  {
-    id: 'grand',
-    name: 'Grand Salon',
-    capacity: '300 - 500 invitați',
-    theme: 'Elegance Clasic',
-    description: 'Candelabre de cristal, lumini calde ambientale și un design aristocratic, perfect pentru nunți mari și fastuoase.',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'
-  },
-  {
-    id: 'imperial',
-    name: 'Imperial Salon',
-    capacity: '100 - 300 invitați',
-    theme: 'Boho-Chic & Modern',
-    description: 'Stil greenery cu accente minimaliste, terasă exterioară integrată și o atmosferă intimă, ideală pentru petreceri moderne.',
-    image: 'https://images.unsplash.com/photo-1549417229-aa67d3263c09?auto=format&fit=crop&w=800&q=80'
-  }
-];
-
-// Datele pentru Servicii Extra
-const SERVICII_EXTRA = [
-  { id: 'artificii', name: 'Artificii dansul mirilor', price: 'Ofertă la cerere' },
-  { id: 'fum_greu', name: 'Gheață carbonică (Fum greu)', price: 'Inclus în pachet' },
-  { id: 'tort_shoturi', name: 'Tort de shot-uri (Shot Bar)', price: 'Ofertă la cerere' },
-  { id: 'candy_bar', name: 'Candy Bar Personalizat', price: 'Ofertă la cerere' }
-];
-
   // Navigare și autentificare
   const [viewMode, setViewMode] = useState<'public' | 'admin'>('public');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
