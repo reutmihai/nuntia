@@ -12,6 +12,7 @@
     "homepage": "https://reutmihai.github.io/React-Vite-Typescript-Tailwind"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@supabase/supabase-js": "^2.107.0",
     "@tailwindcss/vite": "^4.0.9",
     "react": "^19.0.0",

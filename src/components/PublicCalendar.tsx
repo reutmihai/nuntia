@@ -29,6 +29,7 @@ export default function PublicCalendar({
   const [selectedDateForRequest, setSelectedDateForRequest] = useState('');
   const [clientNameInput, setClientNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
+  const [emailInput, setEmailInput] = useState(''); // <-- Adăugat
   const [guestsInput, setGuestsInput] = useState(150);
   const [menuInput, setMenuInput] = useState('Standard');
   const [budgetInput, setBudgetInput] = useState('10.000€ - 15.000€');
@@ -96,18 +97,19 @@ export default function PublicCalendar({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedDateForRequest || !clientNameInput || !phoneInput) return;
+    if (!selectedDateForRequest || !clientNameInput || !phoneInput || !emailInput) return; // <-- Adăugat emailInput la validare
 
     const newRequest: BookingRequest = {
       id: Date.now().toString(),
       date: selectedDateForRequest,
       clientName: clientNameInput,
       phone: phoneInput,
+      email: emailInput, // <-- Trimitem emailul colectat spre App.tsx
       guests: guestsInput,
       menuPreference: menuInput,
       estimatedBudget: budgetInput,
       message: messageInput,
-      salonName: activeSalonFilter,    // Salonul este setat automat pe baza calendarului activ
+      salonName: activeSalonFilter,
       extraServices: selectedServices
     };
 
@@ -117,6 +119,7 @@ export default function PublicCalendar({
     // Resetare inputuri
     setClientNameInput('');
     setPhoneInput('');
+    setEmailInput(''); // <-- Adăugat resetare
     setMessageInput('');
     setSelectedServices([]);
     alert('Cererea de ofertă a fost trimisă cu succes pentru salonul ' + activeSalonFilter + '!');
@@ -318,7 +321,8 @@ export default function PublicCalendar({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {/* GRILA PENTRU TELEFON ȘI EMAIL */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Telefon Contact</label>
                   <input 
@@ -327,15 +331,23 @@ export default function PublicCalendar({
                   />
                 </div>
                 <div>
-                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
+                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Adresă Email</label>
                   <input 
-                    type="number" value={guestsInput} onChange={(e) => setGuestsInput(Number(e.target.value))}
+                    type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="exemplu@gmail.com"
                     className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
                   />
                 </div>
               </div>
 
-              {/* SALON AFIȘAT CA TEXT INFORMATIV (DEJA CONFIGURAT) */}
+              <div>
+                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
+                <input 
+                  type="number" value={guestsInput} onChange={(e) => setGuestsInput(Number(e.target.value))}
+                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+                />
+              </div>
+
+              {/* SALON AFIȘAT CA TEXT INFORMATIV */}
               <div>
                 <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Salon Selectat</label>
                 <div className="w-full bg-zinc-950 border border-white/5 rounded-xl px-4 py-3 text-zinc-300 font-medium text-sm">
