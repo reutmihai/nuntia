@@ -1,4 +1,4 @@
-import { BookingRequest } from '../App';
+import type { BookingRequest } from '../types';
 
 interface AdminInboxProps {
   bookingRequests: BookingRequest[];
@@ -15,21 +15,17 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
         </h3>
         <p className="text-xs text-zinc-400 mt-1">Solicitări proaspete trimise de utilizatori.</p>
       </div>
-      
+
       <div className="space-y-4 overflow-y-auto max-h-[600px] pr-1">
         {bookingRequests.length === 0 ? (
           <p className="text-xs text-zinc-500 italic py-4 text-center">Nicio cerere nouă în inbox.</p>
         ) : (
           bookingRequests.map(req => (
             <div key={req.id} className="bg-black/50 border border-white/5 p-4 rounded-2xl space-y-3 text-xs">
-              
-              {/* ZONA DE SUS ACTUALIZATĂ CU BADGE DE SALON */}
               <div className="flex justify-between items-start gap-2">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-white font-semibold text-sm">{req.clientName}</h4>
-                    
-                    {/* BADGE SALON SELECTAT */}
                     <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-zinc-800 border border-white/10 text-zinc-300 rounded-md">
                       {req.salonName || 'Nespecificat'}
                     </span>
@@ -40,18 +36,17 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                   {req.date}
                 </span>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2 text-[11px] bg-zinc-950 p-2.5 rounded-xl border border-white/5">
                 <div>
-                  <span className="text-zinc-400 block font-light">Invitați:</span> 
+                  <span className="text-zinc-400 block font-light">Invitați:</span>
                   <span className="text-white font-semibold">{req.guests} pers.</span>
                 </div>
                 <div>
-                  <span className="text-zinc-400 block font-light">Meniu:</span> 
+                  <span className="text-zinc-400 block font-light">Meniu:</span>
                   <span className="text-white font-semibold">{req.menuPreference}</span>
                 </div>
-                
-                {/* RENDAM SERVICIILE EXTRA DACĂ EXISTĂ */}
+
                 {req.extraServices && req.extraServices.length > 0 && (
                   <div className="col-span-2 mt-1 pt-2 border-t border-white/5">
                     <span className="text-zinc-400 block font-light mb-1">Servicii Extra:</span>
@@ -66,7 +61,7 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                 )}
 
                 <div className="col-span-2 mt-1 pt-1 border-t border-white/5">
-                  <span className="text-zinc-400 font-light">Buget Estimat:</span> 
+                  <span className="text-zinc-400 font-light">Buget Estimat:</span>
                   <span className="text-emerald-400 font-bold block">{req.estimatedBudget}</span>
                 </div>
               </div>
@@ -76,15 +71,15 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
                   "{req.message}"
                 </p>
               )}
-              
+
               <div className="flex gap-2.5 pt-1">
-                <button 
+                <button
                   onClick={() => onReject(req.id)}
                   className="flex-1 bg-red-950/40 border border-red-900/50 text-red-300 py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-red-900/40 transition-colors font-medium"
                 >
                   Refuză
                 </button>
-                <button 
+                <button
                   onClick={() => onApprove(req)}
                   className="flex-1 bg-green-500 text-black font-bold py-2.5 rounded-xl uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
                 >
