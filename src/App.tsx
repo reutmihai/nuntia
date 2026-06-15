@@ -233,56 +233,84 @@ function App() {
     }
   };
 
+  const BG_IMAGES: Record<typeof viewMode, string> = {
+    public: "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')",
+    portal: "url('https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1920&q=85')",
+    admin:  "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=85')",
+  };
+
   return (
-    <div className="w-full min-h-screen bg-[#fefcf9] text-stone-800 antialiased font-sans relative pb-12">
+    <div
+      className="w-full min-h-screen text-stone-800 antialiased font-sans relative pb-12"
+      style={{ backgroundImage: BG_IMAGES[viewMode], backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
+    >
+      {/* Overlay alb pentru lizibilitate — diferit per view */}
+      <div className={`fixed inset-0 -z-10 transition-colors duration-700 ${
+        viewMode === 'public' ? 'bg-white/88' : viewMode === 'portal' ? 'bg-rose-50/84' : 'bg-stone-50/88'
+      }`} />
 
       {/* Navigation */}
-      <div className="bg-white/90 border-b border-stone-100 sticky top-0 z-30 backdrop-blur-md shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span
-              className="text-sm font-bold tracking-[0.2em] text-stone-900 uppercase cursor-pointer hover:text-rose-700 transition-colors"
-              onClick={() => setViewMode('public')}
-            >
-              {RESTAURANT.name}
-            </span>
-            <span className="text-xs text-stone-400">({RESTAURANT.location})</span>
-          </div>
+      <header className="sticky top-0 z-30">
+        {/* Linie decorativă gradient */}
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-rose-400 to-transparent" />
 
-          <div className="flex p-1 gap-1 rounded-xl text-xs">
+        <div className="bg-white/92 backdrop-blur-lg border-b border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
+          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+
+            {/* Logo + Brand */}
             <button
               onClick={() => setViewMode('public')}
-              className={`px-4 py-2 rounded-lg transition-all font-medium ${
-                viewMode === 'public'
-                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
-                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
-              }`}
+              className="flex items-center gap-3 group"
             >
-              Home
+              {/* SVG — inele suprapuse cu ornament diamant: simbol eveniment elegant */}
+              <svg width="46" height="28" viewBox="0 0 46 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                {/* Inel stâng */}
+                <circle cx="15" cy="14" r="10.5" stroke="#be123c" strokeWidth="1.6"/>
+                {/* Inel drept */}
+                <circle cx="31" cy="14" r="10.5" stroke="#be123c" strokeWidth="1.6"/>
+                {/* Ornament diamant în centru */}
+                <path d="M23 9 L26.5 14 L23 19 L19.5 14 Z" fill="#be123c" fillOpacity="0.18" stroke="#be123c" strokeWidth="1.2" strokeLinejoin="round"/>
+                {/* Punct central */}
+                <circle cx="23" cy="14" r="1.5" fill="#be123c" fillOpacity="0.5"/>
+                {/* Scântei mici deasupra */}
+                <circle cx="23" cy="4" r="1" fill="#be123c" fillOpacity="0.35"/>
+                <circle cx="19" cy="5.5" r="0.7" fill="#be123c" fillOpacity="0.25"/>
+                <circle cx="27" cy="5.5" r="0.7" fill="#be123c" fillOpacity="0.25"/>
+              </svg>
+
+              <div className="text-left">
+                <p className="text-[13px] font-bold tracking-[0.28em] text-stone-900 uppercase group-hover:text-rose-700 transition-colors leading-none">
+                  {RESTAURANT.name}
+                </p>
+                <p className="text-[9px] tracking-[0.22em] text-stone-400 uppercase mt-0.5">
+                  {RESTAURANT.location} · Venue & Events
+                </p>
+              </div>
             </button>
-            <button
-              onClick={() => setViewMode('portal')}
-              className={`px-4 py-2 rounded-lg transition-all font-medium ${
-                viewMode === 'portal'
-                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
-                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
-              }`}
-            >
-              Portal Mirat
-            </button>
-            <button
-              onClick={() => setViewMode('admin')}
-              className={`px-4 py-2 rounded-lg transition-all font-medium ${
-                viewMode === 'admin'
-                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
-                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
-              }`}
-            >
-              Dashboard
-            </button>
+
+            {/* Navigație */}
+            <nav className="flex items-center gap-0.5 bg-stone-50/80 border border-stone-100 rounded-2xl p-1 shadow-inner">
+              {([ ['public', 'Home'], ['portal', 'Portal Mirat'], ['admin', 'Dashboard'] ] as const).map(([mode, label]) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`relative px-5 py-2 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 ${
+                    viewMode === mode
+                      ? 'bg-white text-rose-700 shadow-sm border border-rose-100/80'
+                      : 'text-stone-400 hover:text-stone-700 hover:bg-white/60'
+                  }`}
+                >
+                  {label}
+                  {viewMode === mode && (
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-rose-500" />
+                  )}
+                </button>
+              ))}
+            </nav>
+
           </div>
         </div>
-      </div>
+      </header>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         {isLoading ? (
