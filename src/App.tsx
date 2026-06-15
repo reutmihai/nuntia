@@ -258,8 +258,72 @@ function App() {
       <header className="sticky top-0 z-30">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-rose-400 to-transparent" />
 
-        <div className="bg-white/92 backdrop-blur-lg border-b border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="relative bg-white/92 backdrop-blur-lg border-b border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.06)] overflow-hidden">
+
+          {/* Pattern floral subtil — watermark în fundal */}
+          <div className="absolute inset-0 pointer-events-none select-none opacity-[0.07]" aria-hidden="true">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1400 56" preserveAspectRatio="xMidYMid slice" fill="none">
+              {/* Ramură stânga */}
+              <path d="M-30 50 C50 28 115 44 168 22 C212 6 255 28 292 16" stroke="#92400e" strokeWidth="1.2" strokeLinecap="round"/>
+              {/* Frunze stânga */}
+              <path d="M75 40 Q88 26 100 38" stroke="#4d7c0f" strokeWidth="1" strokeLinecap="round"/>
+              <path d="M215 14 Q225 5 233 13" stroke="#4d7c0f" strokeWidth="1" strokeLinecap="round"/>
+              {/* Floare 1 — mare, la ~168,22 */}
+              <g transform="translate(168,22)">
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(0)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(72)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(144)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(216)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(288)"/>
+                <circle r="2.5" fill="#fbbf24"/>
+              </g>
+              {/* Floare 2 — mică, la ~115,44 */}
+              <g transform="translate(115,44)">
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(0)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(72)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(144)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(216)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(288)"/>
+                <circle r="1.8" fill="#fbbf24"/>
+              </g>
+              {/* Boboc stânga */}
+              <ellipse cx="292" cy="16" rx="2" ry="3.5" fill="#fca5a5" transform="rotate(-20,292,16)"/>
+              <path d="M292 19 L292 26" stroke="#4d7c0f" strokeWidth="0.8"/>
+
+              {/* Ramură dreapta */}
+              <path d="M1430 50 C1350 28 1285 44 1232 22 C1188 6 1145 28 1108 16" stroke="#92400e" strokeWidth="1.2" strokeLinecap="round"/>
+              {/* Frunze dreapta */}
+              <path d="M1325 40 Q1312 26 1300 38" stroke="#4d7c0f" strokeWidth="1" strokeLinecap="round"/>
+              <path d="M1185 14 Q1175 5 1167 13" stroke="#4d7c0f" strokeWidth="1" strokeLinecap="round"/>
+              {/* Floare dreapta mare */}
+              <g transform="translate(1232,22)">
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(0)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(72)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(144)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(216)"/>
+                <ellipse cx="0" cy="-6" rx="2.2" ry="4" fill="#fca5a5" transform="rotate(288)"/>
+                <circle r="2.5" fill="#fbbf24"/>
+              </g>
+              {/* Boboc dreapta */}
+              <ellipse cx="1108" cy="16" rx="2" ry="3.5" fill="#fca5a5" transform="rotate(20,1108,16)"/>
+              <path d="M1108 19 L1108 26" stroke="#4d7c0f" strokeWidth="0.8"/>
+
+              {/* Ramură centrală discretă */}
+              <path d="M640 56 C665 38 695 20 714 29 C733 38 758 10 784 20" stroke="#92400e" strokeWidth="0.9" strokeLinecap="round"/>
+              <g transform="translate(714,29)">
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(0)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(72)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(144)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(216)"/>
+                <ellipse cx="0" cy="-4.5" rx="1.6" ry="3" fill="#fda4af" transform="rotate(288)"/>
+                <circle r="1.8" fill="#fbbf24"/>
+              </g>
+              <path d="M670 45 Q678 35 687 44" stroke="#4d7c0f" strokeWidth="0.8" strokeLinecap="round"/>
+              <path d="M755 16 Q763 8 770 15" stroke="#4d7c0f" strokeWidth="0.8" strokeLinecap="round"/>
+            </svg>
+          </div>
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
 
             {/* Logo + Brand */}
             <button
@@ -285,49 +349,46 @@ function App() {
               </div>
             </button>
 
-            {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-0.5 bg-stone-50/80 border border-stone-100 rounded-2xl p-1 shadow-inner">
-              {([ ['public', 'Home'], ['portal', 'Portal Mirat'], ['admin', 'Administrare'] ] as const).map(([mode, label]) => (
+            {/* Desktop nav — culori discrete */}
+            <nav className="hidden md:flex items-center gap-0.5 bg-stone-100/60 border border-stone-200/60 rounded-2xl p-1">
+              {([ ['public', 'Home'], ['portal', 'Evenimentul Meu'], ['admin', 'Administrare'] ] as const).map(([mode, label]) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`relative px-5 py-2 rounded-xl text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 ${
+                  className={`relative px-5 py-2 rounded-xl text-[11px] font-medium uppercase tracking-wider transition-all duration-200 ${
                     viewMode === mode
-                      ? 'bg-white text-rose-700 shadow-sm border border-rose-100/80'
-                      : 'text-stone-400 hover:text-stone-700 hover:bg-white/60'
+                      ? 'bg-white text-stone-700 shadow-sm border border-stone-200/80'
+                      : 'text-stone-400 hover:text-stone-600 hover:bg-white/50'
                   }`}
                 >
                   {label}
-                  {viewMode === mode && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-rose-500" />
-                  )}
                 </button>
               ))}
             </nav>
 
-            {/* Burger button — mobil / tabletă */}
+            {/* Burger button */}
             <button
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
               aria-label="Meniu"
               className="md:hidden flex flex-col justify-center items-center gap-[5px] w-10 h-10 rounded-xl hover:bg-stone-50 transition-colors"
             >
-              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[6.5px]' : ''}`} />
-              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[6.5px]' : ''}`} />
+              <span className={`block w-5 h-[1.5px] bg-stone-500 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[6.5px]' : ''}`} />
+              <span className={`block w-5 h-[1.5px] bg-stone-500 rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block w-5 h-[1.5px] bg-stone-500 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[6.5px]' : ''}`} />
             </button>
           </div>
 
           {/* Mobile menu dropdown */}
           <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-56 opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="border-t border-stone-100 px-4 py-3 flex flex-col gap-1">
-              {([ ['public', 'Home', '🏠'], ['portal', 'Portal Mirat', '💍'], ['admin', 'Administrare', '⚙️'] ] as const).map(([mode, label, icon]) => (
+              {([ ['public', 'Home', '🏠'], ['portal', 'Evenimentul Meu', '💍'], ['admin', 'Administrare', '⚙️'] ] as const).map(([mode, label, icon]) => (
                 <button
                   key={mode}
                   onClick={() => { setViewMode(mode); setIsMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-left ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
                     viewMode === mode
-                      ? 'bg-rose-50 text-rose-700 border-l-[3px] border-rose-500'
-                      : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800'
+                      ? 'bg-stone-100 text-stone-800 border-l-[3px] border-stone-400'
+                      : 'text-stone-500 hover:bg-stone-50 hover:text-stone-700'
                   }`}
                 >
                   <span className="text-base">{icon}</span>

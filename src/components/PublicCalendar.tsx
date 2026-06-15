@@ -309,7 +309,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                         ? 'bg-rose-50 border-rose-200 text-rose-300 cursor-not-allowed'
                         : isPending
                           ? 'bg-amber-50 border-amber-200 text-amber-700'
-                          : 'bg-white border-rose-100 hover:border-rose-300 hover:bg-rose-50/50 text-stone-800 cursor-pointer shadow-sm hover:shadow-md'
+                          : 'bg-white border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50/50 text-stone-800 cursor-pointer shadow-sm hover:shadow-md'
                   }`}
                 >
                   <span className="text-xs sm:text-sm font-semibold">{day}</span>
@@ -321,13 +321,13 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                         ? 'text-rose-400'
                         : isPending
                           ? 'text-amber-500'
-                          : 'text-rose-500 group-hover:text-rose-700'
+                          : 'text-emerald-600 group-hover:text-emerald-700'
                   }`}>
                     {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă →'}
                   </span>
                   {/* Indicator mobil — punct colorat mai mare */}
                   <span className={`sm:hidden w-2 h-2 rounded-full ${
-                    isPast ? 'bg-stone-300' : isOcupat ? 'bg-rose-400' : isPending ? 'bg-amber-400' : 'bg-rose-300 group-hover:bg-rose-500'
+                    isPast ? 'bg-stone-300' : isOcupat ? 'bg-rose-400' : isPending ? 'bg-amber-400' : 'bg-emerald-300 group-hover:bg-emerald-500'
                   }`} />
                 </button>
               );
@@ -336,7 +336,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
 
           <div className="flex flex-wrap gap-3 sm:gap-5 mt-6 pt-6 border-t border-stone-100">
             {[
-              { color: 'bg-white border-rose-200 shadow-sm', dot: 'bg-rose-300', label: 'Disponibil', hint: 'Click pentru a rezerva' },
+              { color: 'bg-white border-emerald-200 shadow-sm', dot: 'bg-emerald-400', label: 'Disponibil', hint: 'Click pentru a rezerva' },
               { color: 'bg-rose-50 border-rose-200', dot: 'bg-rose-400', label: 'Ocupat', hint: 'Data indisponibilă' },
               { color: 'bg-amber-50 border-amber-200', dot: 'bg-amber-400', label: 'În analiză', hint: 'Cerere în așteptare' },
               { color: 'bg-stone-50 border-stone-100 opacity-50', dot: 'bg-stone-300', label: 'Trecut', hint: 'Dată expirată' },
