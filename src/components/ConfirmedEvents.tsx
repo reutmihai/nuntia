@@ -1,4 +1,4 @@
-import { ConfirmedEvent } from '../App';
+import type { ConfirmedEvent } from '../types';
 
 interface ConfirmedEventsProps {
   confirmedEvents: ConfirmedEvent[];
@@ -39,8 +39,6 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
             ) : (
               confirmedEvents.map((event) => (
                 <tr key={event.id} className="hover:bg-white/[0.02] transition-colors">
-                  
-                  {/* DATĂ ȘI SALON */}
                   <td className="p-4 whitespace-nowrap">
                     <span className="bg-zinc-800 text-white font-mono px-2.5 py-1 rounded-lg border border-white/10 text-[11px] block w-fit">
                       {event.date}
@@ -50,29 +48,25 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
                     </span>
                   </td>
 
-                  {/* CLIENT ȘI CONTACT */}
                   <td className="p-4">
                     <div className="font-semibold text-white text-sm">{event.clientName}</div>
                     <div className="text-zinc-400 font-mono mt-0.5">{event.phone}</div>
                   </td>
 
-                  {/* INVITAȚI */}
                   <td className="p-4 text-center font-medium text-zinc-300 whitespace-nowrap">
                     {event.guests} pers.
                   </td>
 
-                  {/* PREȚ MENIU */}
                   <td className="p-4 font-semibold text-emerald-400 whitespace-nowrap">
                     {event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'Nespecificat'}
                   </td>
 
-                  {/* SERVICII EXTRA */}
                   <td className="p-4 max-w-[200px]">
                     {event.extraServices && event.extraServices.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {event.extraServices.map((service, idx) => (
-                          <span 
-                            key={idx} 
+                          <span
+                            key={idx}
                             className="bg-zinc-950 border border-white/5 text-zinc-400 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap"
                           >
                             {service}
@@ -84,7 +78,6 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
                     )}
                   </td>
 
-                  {/* BUTON ANULARE */}
                   <td className="p-4 text-right">
                     <button
                       onClick={() => onCancelEvent(event.id)}
@@ -93,7 +86,6 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
                       Anulează
                     </button>
                   </td>
-
                 </tr>
               ))
             )}
