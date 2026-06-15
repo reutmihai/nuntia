@@ -18,7 +18,30 @@ export default function AdminInbox({ bookingRequests, onApprove, onReject }: Adm
 
       <div className="space-y-4 overflow-y-auto max-h-[600px] pr-1">
         {bookingRequests.length === 0 ? (
-          <p className="text-xs text-stone-400 italic py-8 text-center">Nicio cerere nouă în inbox.</p>
+          <div className="flex flex-col items-center justify-center py-10 space-y-5 text-center">
+            {/* Ilustrație SVG — plic gol */}
+            <svg width="72" height="56" viewBox="0 0 72 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-40">
+              <rect x="4" y="10" width="64" height="42" rx="5" stroke="#d4a574" strokeWidth="2" fill="#fdf8f4"/>
+              <path d="M4 15 L36 34 L68 15" stroke="#d4a574" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M4 52 L26 32" stroke="#d4a574" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.6"/>
+              <path d="M68 52 L46 32" stroke="#d4a574" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.6"/>
+              {/* Petale decorative deasupra plicului */}
+              <circle cx="36" cy="6" r="3" fill="#be123c" fillOpacity="0.25"/>
+              <circle cx="28" cy="8" r="2" fill="#be123c" fillOpacity="0.15"/>
+              <circle cx="44" cy="8" r="2" fill="#be123c" fillOpacity="0.15"/>
+            </svg>
+
+            <div className="space-y-1">
+              <p className="text-sm font-light text-stone-600 uppercase tracking-widest">Inbox gol</p>
+              <p className="text-xs text-stone-400 max-w-[200px] leading-relaxed">
+                Cererile noi de ofertă trimise de clienți vor apărea automat aici.
+              </p>
+            </div>
+
+            <div className="bg-stone-50 border border-stone-100 rounded-2xl px-4 py-3 text-[10px] text-stone-400 leading-relaxed max-w-[220px]">
+              💡 Distribuiți linkul site-ului pentru a primi rezervări noi.
+            </div>
+          </div>
         ) : (
           bookingRequests.map(req => (
             <div key={req.id} className="bg-stone-50 border border-stone-100 p-4 rounded-2xl space-y-3 text-xs hover:border-rose-100 transition-colors">
