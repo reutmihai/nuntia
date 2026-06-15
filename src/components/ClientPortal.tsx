@@ -39,13 +39,13 @@ function useCountdown(dateStr: string): TimeLeft {
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-2.5">
-      <div className="w-full bg-white border border-rose-100 rounded-2xl px-3 py-6 text-center shadow-sm">
-        <span className="text-5xl sm:text-6xl font-extralight text-rose-700 tabular-nums leading-none">
+    <div className="flex flex-col items-center gap-1.5 sm:gap-2.5">
+      <div className="w-full bg-white border border-rose-100 rounded-xl sm:rounded-2xl px-1 sm:px-3 py-4 sm:py-6 text-center shadow-sm">
+        <span className="text-3xl sm:text-5xl lg:text-6xl font-extralight text-rose-700 tabular-nums leading-none">
           {String(value).padStart(2, '0')}
         </span>
       </div>
-      <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">{label}</span>
+      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-stone-400 font-semibold">{label}</span>
     </div>
   );
 }
@@ -200,7 +200,7 @@ export default function ClientPortal() {
   const totalEstimate = event.pricePerMeniu ? event.pricePerMeniu * event.guests : null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 py-8">
+    <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8 py-4 sm:py-8">
 
       {/* Header */}
       <div className="space-y-1">

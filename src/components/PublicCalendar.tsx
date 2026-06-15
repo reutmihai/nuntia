@@ -145,17 +145,17 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')" }}
         />
         <div className="absolute inset-0 bg-white/65 backdrop-blur-[2px]" />
-        <div className="relative z-10 text-center space-y-6 px-8 py-24">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
-          <h1 className="text-5xl font-extralight uppercase tracking-widest text-stone-900 leading-tight">
+        <div className="relative z-10 text-center space-y-5 px-5 sm:px-8 py-16 sm:py-24">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
+          <h1 className="text-3xl sm:text-5xl font-extralight uppercase tracking-widest text-stone-900 leading-tight">
             Locul unde încep <span className="font-semibold text-rose-700">Poveștile</span>
           </h1>
-          <p className="text-base text-stone-500 font-light leading-relaxed max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-stone-500 font-light leading-relaxed max-w-xl mx-auto">
             Alege salonul dorit, verifică disponibilitatea în timp real și configurează o cerere de ofertă personalizată.
           </p>
           <button
             onClick={() => document.getElementById('calendar-section')?.scrollIntoView({ behavior: 'smooth' })}
-            className="inline-block mt-2 px-8 py-3 bg-rose-700 text-white text-xs font-semibold uppercase tracking-widest rounded-full hover:bg-rose-800 transition-colors"
+            className="inline-block mt-2 px-6 sm:px-8 py-3 bg-rose-700 text-white text-xs font-semibold uppercase tracking-widest rounded-full hover:bg-rose-800 transition-colors"
           >
             Verifică disponibilitate
           </button>
@@ -231,17 +231,17 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
 
       {/* ─── CALENDAR ─────────────────────────────────────────── */}
       <div id="calendar-section" className="space-y-6 pt-6 scroll-mt-24">
-        <div className="border-b border-stone-100 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="border-b border-stone-100 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex items-center gap-3">
             <div className="w-1 h-5 bg-rose-600 rounded-full" />
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Verifică disponibilitate calendar</h2>
           </div>
-          <div className="flex bg-stone-100 p-1 border border-stone-200 rounded-xl">
+          <div className="flex w-full sm:w-auto bg-stone-100 p-1 border border-stone-200 rounded-xl">
             {SALOANE.map(s => (
               <button
                 key={s.id}
                 onClick={() => setActiveSalonFilter(s.name)}
-                className={`text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition-all ${
+                className={`flex-1 sm:flex-none text-[10px] font-bold uppercase tracking-wider px-3 sm:px-4 py-2 rounded-lg transition-all ${
                   activeSalonFilter === s.name
                     ? 'bg-white text-rose-700 shadow-sm border border-rose-100'
                     : 'text-stone-500 hover:text-stone-800'
@@ -277,13 +277,13 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center text-xs text-stone-400 font-semibold mb-4 uppercase tracking-wider">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs text-stone-400 font-semibold mb-3 uppercase tracking-wider">
             {WEEKDAYS.map(d => <div key={d}>{d}</div>)}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {currentMonthDays.map((day, idx) => {
-              if (day === null) return <div key={`empty-${idx}`} className="h-20" />;
+              if (day === null) return <div key={`empty-${idx}`} className="h-12 sm:h-20" />;
 
               const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
               const isPast =
@@ -302,7 +302,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                     setSelectedDateForRequest(dateStr);
                     setShowFormModal(true);
                   }}
-                  className={`h-20 p-3 rounded-2xl border text-left flex flex-col justify-between transition-all group ${
+                  className={`h-12 sm:h-20 p-1.5 sm:p-3 rounded-xl sm:rounded-2xl border text-left flex flex-col justify-between transition-all group ${
                     isPast
                       ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed opacity-50 line-through'
                       : isOcupat
@@ -312,8 +312,9 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                           : 'bg-white border-stone-100 hover:border-rose-200 hover:bg-rose-50/40 text-stone-800 cursor-pointer'
                   }`}
                 >
-                  <span className="text-sm font-semibold">{day}</span>
-                  <span className={`text-[9px] uppercase tracking-wider font-semibold ${
+                  <span className="text-xs sm:text-sm font-semibold">{day}</span>
+                  {/* Status label — ascuns pe mobile, vizibil de la sm */}
+                  <span className={`hidden sm:inline text-[9px] uppercase tracking-wider font-semibold ${
                     isPast
                       ? 'text-stone-300'
                       : isOcupat
@@ -324,6 +325,10 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                   }`}>
                     {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă'}
                   </span>
+                  {/* Dot indicator pe mobile în locul textului */}
+                  <span className={`sm:hidden w-1.5 h-1.5 rounded-full ${
+                    isPast ? 'bg-stone-300' : isOcupat ? 'bg-rose-400' : isPending ? 'bg-amber-400' : 'bg-stone-200 group-hover:bg-rose-400'
+                  }`} />
                 </button>
               );
             })}

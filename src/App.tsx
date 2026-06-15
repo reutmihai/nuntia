@@ -27,6 +27,7 @@ function App() {
   const [confirmedEvents, setConfirmedEvents] = useState<ConfirmedEvent[]>([]);
   const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -251,45 +252,37 @@ function App() {
 
       {/* Navigation */}
       <header className="sticky top-0 z-30">
-        {/* Linie decorativă gradient */}
         <div className="h-[2px] bg-gradient-to-r from-transparent via-rose-400 to-transparent" />
 
         <div className="bg-white/92 backdrop-blur-lg border-b border-stone-100 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
-          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
 
             {/* Logo + Brand */}
             <button
-              onClick={() => setViewMode('public')}
+              onClick={() => { setViewMode('public'); setIsMobileMenuOpen(false); }}
               className="flex items-center gap-3 group"
             >
-              {/* SVG — inele suprapuse cu ornament diamant: simbol eveniment elegant */}
               <svg width="46" height="28" viewBox="0 0 46 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                {/* Inel stâng */}
                 <circle cx="15" cy="14" r="10.5" stroke="#be123c" strokeWidth="1.6"/>
-                {/* Inel drept */}
                 <circle cx="31" cy="14" r="10.5" stroke="#be123c" strokeWidth="1.6"/>
-                {/* Ornament diamant în centru */}
                 <path d="M23 9 L26.5 14 L23 19 L19.5 14 Z" fill="#be123c" fillOpacity="0.18" stroke="#be123c" strokeWidth="1.2" strokeLinejoin="round"/>
-                {/* Punct central */}
                 <circle cx="23" cy="14" r="1.5" fill="#be123c" fillOpacity="0.5"/>
-                {/* Scântei mici deasupra */}
                 <circle cx="23" cy="4" r="1" fill="#be123c" fillOpacity="0.35"/>
                 <circle cx="19" cy="5.5" r="0.7" fill="#be123c" fillOpacity="0.25"/>
                 <circle cx="27" cy="5.5" r="0.7" fill="#be123c" fillOpacity="0.25"/>
               </svg>
-
               <div className="text-left">
                 <p className="text-[13px] font-bold tracking-[0.28em] text-stone-900 uppercase group-hover:text-rose-700 transition-colors leading-none">
                   {RESTAURANT.name}
                 </p>
-                <p className="text-[9px] tracking-[0.22em] text-stone-400 uppercase mt-0.5">
+                <p className="text-[9px] tracking-[0.22em] text-stone-400 uppercase mt-0.5 hidden sm:block">
                   {RESTAURANT.location} · Venue & Events
                 </p>
               </div>
             </button>
 
-            {/* Navigație */}
-            <nav className="flex items-center gap-0.5 bg-stone-50/80 border border-stone-100 rounded-2xl p-1 shadow-inner">
+            {/* Desktop nav */}
+            <nav className="hidden md:flex items-center gap-0.5 bg-stone-50/80 border border-stone-100 rounded-2xl p-1 shadow-inner">
               {([ ['public', 'Home'], ['portal', 'Portal Mirat'], ['admin', 'Dashboard'] ] as const).map(([mode, label]) => (
                 <button
                   key={mode}
@@ -308,11 +301,42 @@ function App() {
               ))}
             </nav>
 
+            {/* Burger button — mobil / tabletă */}
+            <button
+              onClick={() => setIsMobileMenuOpen(prev => !prev)}
+              aria-label="Meniu"
+              className="md:hidden flex flex-col justify-center items-center gap-[5px] w-10 h-10 rounded-xl hover:bg-stone-50 transition-colors"
+            >
+              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[6.5px]' : ''}`} />
+              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block w-5 h-[1.5px] bg-stone-700 rounded-full transition-all duration-300 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[6.5px]' : ''}`} />
+            </button>
+          </div>
+
+          {/* Mobile menu dropdown */}
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-56 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="border-t border-stone-100 px-4 py-3 flex flex-col gap-1">
+              {([ ['public', 'Home', '🏠'], ['portal', 'Portal Mirat', '💍'], ['admin', 'Dashboard', '⚙️'] ] as const).map(([mode, label, icon]) => (
+                <button
+                  key={mode}
+                  onClick={() => { setViewMode(mode); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-left ${
+                    viewMode === mode
+                      ? 'bg-rose-50 text-rose-700 border-l-[3px] border-rose-500'
+                      : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800'
+                  }`}
+                >
+                  <span className="text-base">{icon}</span>
+                  <span className="uppercase tracking-wider text-[11px]">{label}</span>
+                  {viewMode === mode && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-rose-500" />}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
             <div className="text-sm uppercase tracking-widest text-stone-400 animate-pulse">
