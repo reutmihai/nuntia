@@ -83,7 +83,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
     );
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedDateForRequest || !clientNameInput || !phoneInput || !emailInput) return;
 
@@ -119,42 +119,61 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
   return (
     <div className="space-y-20 max-w-5xl mx-auto">
 
-      <div className="text-center space-y-6 max-w-3xl mx-auto py-8">
-        <h1 className="text-5xl font-extralight uppercase tracking-widest text-white leading-tight">
-          Locul unde încep <span className="font-normal text-zinc-400">Poveștile</span>
-        </h1>
-        <p className="text-base text-zinc-400 font-light leading-relaxed max-w-xl mx-auto">
-          Alege salonul dorit, verifică disponibilitatea dedicată în timp real și configurează o cerere de ofertă personalizată.
-        </p>
+      {/* Hero */}
+      <div className="relative rounded-3xl overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80')" }}
+        />
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
+        <div className="relative z-10 text-center space-y-6 px-8 py-24">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
+          <h1 className="text-5xl font-extralight uppercase tracking-widest text-stone-900 leading-tight">
+            Locul unde încep <span className="font-semibold text-rose-700">Poveștile</span>
+          </h1>
+          <p className="text-base text-stone-500 font-light leading-relaxed max-w-xl mx-auto">
+            Alege salonul dorit, verifică disponibilitatea în timp real și configurează o cerere de ofertă personalizată.
+          </p>
+          <button
+            onClick={() => document.getElementById('calendar-section')?.scrollIntoView({ behavior: 'smooth' })}
+            className="inline-block mt-2 px-8 py-3 bg-rose-700 text-white text-xs font-semibold uppercase tracking-widest rounded-full hover:bg-rose-800 transition-colors"
+          >
+            Verifică disponibilitate
+          </button>
+        </div>
       </div>
 
+      {/* Saloane */}
       <div className="space-y-8">
-        <div className="border-b border-white/10 pb-4">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Saloane Disponibile</h2>
+        <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
+          <div className="w-1 h-5 bg-rose-600 rounded-full" />
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Saloane Disponibile</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {SALOANE.map((salon) => (
-            <div key={salon.id} className="bg-zinc-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col group">
+            <div key={salon.id} className="bg-white border border-stone-100 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow flex flex-col group">
               <div className="h-64 overflow-hidden relative">
                 <img
                   src={salon.image}
                   alt={salon.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-white">{salon.theme}</span>
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-xl font-light tracking-wide text-white">{salon.name}</h3>
-                  <p className="text-xs text-zinc-400 font-light leading-relaxed">{salon.description}</p>
+                  <h3 className="text-xl font-light tracking-wide text-stone-900">{salon.name}</h3>
+                  <p className="text-xs text-stone-500 font-light leading-relaxed">{salon.description}</p>
                 </div>
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                  <span className="text-[11px] text-zinc-400">Capacitate: <strong className="text-white">{salon.capacity}</strong></span>
+                <div className="flex items-center justify-between pt-4 border-t border-stone-100">
+                  <span className="text-[11px] text-stone-500">
+                    Capacitate: <strong className="text-stone-800">{salon.capacity}</strong>
+                  </span>
                   <button
                     onClick={() => handleSelectSalonFromCard(salon.name)}
-                    className="text-[10px] font-bold uppercase tracking-widest bg-white text-black px-4 py-2 rounded-xl hover:bg-zinc-200 transition-colors"
+                    className="text-[10px] font-bold uppercase tracking-widest bg-rose-700 text-white px-4 py-2 rounded-xl hover:bg-rose-800 transition-colors"
                   >
                     Vezi Calendar
                   </button>
@@ -165,30 +184,38 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         </div>
       </div>
 
+      {/* Servicii Extra */}
       <div className="space-y-8">
-        <div className="border-b border-white/10 pb-4">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Efecte & Servicii Opționale</h2>
+        <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
+          <div className="w-1 h-5 bg-rose-600 rounded-full" />
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Efecte & Servicii Opționale</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {SERVICII_EXTRA.map((service) => (
-            <div key={service.id} className="bg-zinc-900/30 border border-white/5 p-5 rounded-2xl space-y-2 hover:border-white/10 transition-colors">
-              <h4 className="text-xs font-semibold text-white tracking-wide">{service.name}</h4>
-              <p className="text-[11px] text-zinc-400 font-light leading-relaxed">{service.description}</p>
+            <div key={service.id} className="bg-rose-50/60 border border-rose-100 p-5 rounded-2xl space-y-2 hover:border-rose-200 hover:shadow-sm transition-all">
+              <h4 className="text-xs font-semibold text-stone-800 tracking-wide">{service.name}</h4>
+              <p className="text-[11px] text-stone-500 font-light leading-relaxed">{service.description}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Calendar */}
       <div id="calendar-section" className="space-y-6 pt-6">
-        <div className="border-b border-white/10 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Verifică disponibilitate calendar</h2>
-          <div className="flex bg-zinc-950 p-1 border border-white/5 rounded-xl">
+        <div className="border-b border-stone-100 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-5 bg-rose-600 rounded-full" />
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Verifică disponibilitate calendar</h2>
+          </div>
+          <div className="flex bg-stone-100 p-1 border border-stone-200 rounded-xl">
             {SALOANE.map(s => (
               <button
                 key={s.id}
                 onClick={() => setActiveSalonFilter(s.name)}
                 className={`text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition-all ${
-                  activeSalonFilter === s.name ? 'bg-white text-black shadow-md' : 'text-zinc-400 hover:text-white'
+                  activeSalonFilter === s.name
+                    ? 'bg-white text-rose-700 shadow-sm border border-rose-100'
+                    : 'text-stone-500 hover:text-stone-800'
                 }`}
               >
                 {s.name}
@@ -197,35 +224,35 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
           </div>
         </div>
 
-        <div className="bg-zinc-900/60 border border-white/10 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-white/5">
-            <span className="text-lg font-light uppercase tracking-widest text-white">
-              {MONTHS[selectedMonth].name} {selectedYear}{' '}
-              <span className="text-xs font-mono text-zinc-500 ml-2">({activeSalonFilter})</span>
+        <div className="bg-white border border-stone-100 rounded-3xl p-6 shadow-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-stone-100">
+            <span className="text-lg font-light uppercase tracking-widest text-stone-900">
+              {MONTHS[selectedMonth].name} {selectedYear}
+              <span className="text-xs font-mono text-stone-400 ml-2">({activeSalonFilter})</span>
             </span>
             <div className="flex gap-3">
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none cursor-pointer"
+                className="bg-stone-50 border border-stone-200 text-xs rounded-xl px-4 py-2 text-stone-800 font-medium focus:outline-none focus:border-rose-300 cursor-pointer transition-colors"
               >
                 {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className="bg-zinc-950 border border-white/10 text-xs rounded-xl px-4 py-2 text-white font-medium focus:outline-none cursor-pointer"
+                className="bg-stone-50 border border-stone-200 text-xs rounded-xl px-4 py-2 text-stone-800 font-medium focus:outline-none focus:border-rose-300 cursor-pointer transition-colors"
               >
                 {MONTHS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center text-xs text-zinc-400 font-semibold mb-4 uppercase tracking-wider">
+          <div className="grid grid-cols-7 gap-2 text-center text-xs text-stone-400 font-semibold mb-4 uppercase tracking-wider">
             {WEEKDAYS.map(d => <div key={d}>{d}</div>)}
           </div>
 
-          <div className="grid grid-cols-7 gap-2.5">
+          <div className="grid grid-cols-7 gap-2">
             {currentMonthDays.map((day, idx) => {
               if (day === null) return <div key={`empty-${idx}`} className="h-20" />;
 
@@ -246,19 +273,25 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                     setSelectedDateForRequest(dateStr);
                     setShowFormModal(true);
                   }}
-                  className={`h-20 p-3 rounded-2xl border text-left flex flex-col justify-between transition-all group relative ${
+                  className={`h-20 p-3 rounded-2xl border text-left flex flex-col justify-between transition-all group ${
                     isPast
-                      ? 'bg-zinc-950/20 border-zinc-900 text-zinc-600 cursor-not-allowed opacity-40 line-through'
+                      ? 'bg-stone-50 border-stone-100 text-stone-300 cursor-not-allowed opacity-50 line-through'
                       : isOcupat
-                        ? 'bg-red-950/10 border-red-900/30 text-red-400/50 cursor-not-allowed'
+                        ? 'bg-rose-50 border-rose-200 text-rose-300 cursor-not-allowed'
                         : isPending
-                          ? 'bg-amber-950/20 border-amber-900/40 text-amber-400'
-                          : 'bg-zinc-950/50 border-white/5 hover:border-white/30 hover:bg-zinc-900 text-white'
+                          ? 'bg-amber-50 border-amber-200 text-amber-700'
+                          : 'bg-white border-stone-100 hover:border-rose-200 hover:bg-rose-50/40 text-stone-800 cursor-pointer'
                   }`}
                 >
                   <span className="text-sm font-semibold">{day}</span>
                   <span className={`text-[9px] uppercase tracking-wider font-semibold ${
-                    isPast ? 'text-zinc-600 no-underline inline-block' : isOcupat ? 'text-red-500' : isPending ? 'text-amber-400' : 'text-zinc-400 group-hover:text-white'
+                    isPast
+                      ? 'text-stone-300'
+                      : isOcupat
+                        ? 'text-rose-400'
+                        : isPending
+                          ? 'text-amber-500'
+                          : 'text-stone-400 group-hover:text-rose-600'
                   }`}>
                     {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă'}
                   </span>
@@ -266,78 +299,105 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               );
             })}
           </div>
+
+          {/* Legenda */}
+          <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-stone-100">
+            {[
+              { color: 'bg-white border-stone-200', label: 'Disponibil' },
+              { color: 'bg-rose-50 border-rose-200', label: 'Ocupat' },
+              { color: 'bg-amber-50 border-amber-200', label: 'În analiză' },
+              { color: 'bg-stone-50 border-stone-100 opacity-50', label: 'Trecut' },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded border ${color}`} />
+                <span className="text-[10px] text-stone-400 uppercase tracking-wider">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Modal formular */}
       {showFormModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-900 border border-white/10 rounded-3xl max-w-md w-full p-6 text-xs shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-100 rounded-3xl max-w-md w-full p-6 text-xs shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-md uppercase tracking-widest text-white font-light">Cerere de Ofertă Nuntă</h3>
-                <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
-                  Data: {selectedDateForRequest} | Salon: {activeSalonFilter}
+                <h3 className="text-md uppercase tracking-widest text-stone-900 font-light">Cerere de Ofertă</h3>
+                <p className="text-[10px] text-stone-400 font-mono mt-0.5">
+                  {selectedDateForRequest} · {activeSalonFilter}
                 </p>
               </div>
-              <button onClick={() => setShowFormModal(false)} className="text-zinc-400 hover:text-white text-sm p-1">✕</button>
+              <button
+                onClick={() => setShowFormModal(false)}
+                className="text-stone-400 hover:text-stone-700 text-sm p-1 transition-colors"
+              >
+                ✕
+              </button>
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Numele Cuplului (Miri)</label>
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Numele Cuplului (Miri)</label>
                 <input
                   type="text" required value={clientNameInput} onChange={(e) => setClientNameInput(e.target.value)}
                   placeholder="Ex: Popescu Andrei & Maria"
-                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Telefon Contact</label>
+                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Telefon</label>
                   <input
                     type="tel" required value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)}
                     placeholder="07xxxxxxxx"
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Adresă Email</label>
+                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Email</label>
                   <input
                     type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
                     placeholder="exemplu@gmail.com"
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
                 <input
                   type="number" value={guestsInput} onChange={(e) => setGuestsInput(Number(e.target.value))}
-                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Salon Selectat</label>
-                <div className="w-full bg-zinc-950 border border-white/5 rounded-xl px-4 py-3 text-zinc-300 font-medium text-sm">
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Salon Selectat</label>
+                <div className="w-full bg-rose-50 border border-rose-100 rounded-xl px-4 py-3 text-rose-700 font-semibold text-sm">
                   {activeSalonFilter}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Preferință Meniu</label>
-                  <select value={menuInput} onChange={(e) => setMenuInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs cursor-pointer">
+                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Preferință Meniu</label>
+                  <select
+                    value={menuInput} onChange={(e) => setMenuInput(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-3 text-stone-800 text-xs cursor-pointer focus:outline-none focus:border-rose-300 transition-colors"
+                  >
                     <option>Standard</option>
                     <option>Premium</option>
                     <option>Exclusive</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Buget Estimat</label>
-                  <select value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="w-full bg-black border border-white/10 rounded-xl px-3 py-3 text-white text-xs cursor-pointer">
+                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Buget Estimat</label>
+                  <select
+                    value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-3 text-stone-800 text-xs cursor-pointer focus:outline-none focus:border-rose-300 transition-colors"
+                  >
                     <option>10.000€ - 15.000€</option>
                     <option>15.000€ - 20.000€</option>
                     <option>20.000€ +</option>
@@ -346,17 +406,17 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">Servicii Extra Opționale</label>
-                <div className="bg-black/50 border border-white/10 rounded-xl p-3 space-y-2.5">
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">Servicii Extra Opționale</label>
+                <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 space-y-2.5">
                   {SERVICII_EXTRA.map(service => (
                     <label key={service.id} className="flex items-start gap-3 cursor-pointer select-none group">
                       <input
                         type="checkbox"
                         checked={selectedServices.includes(service.name)}
                         onChange={() => handleServiceChange(service.name)}
-                        className="mt-0.5 accent-white h-3.5 w-3.5 bg-zinc-950 rounded border-white/10"
+                        className="mt-0.5 accent-rose-600 h-3.5 w-3.5 rounded"
                       />
-                      <span className="text-zinc-200 text-xs font-medium group-hover:text-white transition-colors">
+                      <span className="text-stone-700 text-xs font-medium group-hover:text-rose-700 transition-colors">
                         {service.name}
                       </span>
                     </label>
@@ -365,17 +425,17 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Solicitări speciale (Opțional)</label>
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Solicitări speciale (Opțional)</label>
                 <textarea
                   value={messageInput} onChange={(e) => setMessageInput(e.target.value)}
                   placeholder="Detalii suplimentare..." rows={2}
-                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none text-sm resize-none"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm resize-none transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-white text-black py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] mt-2 hover:bg-zinc-200 transition-colors"
+                className="w-full bg-rose-700 text-white py-3.5 rounded-xl font-bold uppercase tracking-widest text-[10px] mt-2 hover:bg-rose-800 transition-colors"
               >
                 Trimite Cererea de Ofertă
               </button>

@@ -118,7 +118,7 @@ function App() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (passwordInput === 'admin123') {
       setIsAdminLoggedIn(true);
@@ -137,7 +137,7 @@ function App() {
     else setNegotiatedPrice(85);
   };
 
-  const handleConfirmApproval = async (e: React.FormEvent) => {
+  const handleConfirmApproval = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!approvingRequest) return;
 
@@ -234,37 +234,51 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-zinc-950 text-zinc-100 antialiased font-sans relative pb-12">
-      <div className="bg-zinc-900 border-b border-white/10 sticky top-0 z-30 backdrop-blur-md">
+    <div className="w-full min-h-screen bg-[#fefcf9] text-stone-800 antialiased font-sans relative pb-12">
+
+      {/* Navigation */}
+      <div className="bg-white/90 border-b border-stone-100 sticky top-0 z-30 backdrop-blur-md shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span
-              className="text-sm font-bold tracking-[0.2em] text-white uppercase cursor-pointer"
+              className="text-sm font-bold tracking-[0.2em] text-stone-900 uppercase cursor-pointer hover:text-rose-700 transition-colors"
               onClick={() => setViewMode('public')}
             >
               {RESTAURANT.name}
             </span>
-            <span className="text-xs text-zinc-400">({RESTAURANT.location})</span>
+            <span className="text-xs text-stone-400">({RESTAURANT.location})</span>
           </div>
 
-          <div className="flex p-1 gap-3 rounded-xl text-xs">
+          <div className="flex p-1 gap-1 rounded-xl text-xs">
             <button
               onClick={() => setViewMode('public')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'public' ? 'font-semibold text-white bg-white/10' : 'hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all font-medium ${
+                viewMode === 'public'
+                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
+                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
+              }`}
             >
               Home
             </button>
             <button
               onClick={() => setViewMode('portal')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'portal' ? 'font-semibold text-white bg-white/10' : 'hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all font-medium ${
+                viewMode === 'portal'
+                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
+                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
+              }`}
             >
               Portal Mirat
             </button>
             <button
               onClick={() => setViewMode('admin')}
-              className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'admin' ? 'font-semibold text-white bg-white/10' : 'hover:text-zinc-200'}`}
+              className={`px-4 py-2 rounded-lg transition-all font-medium ${
+                viewMode === 'admin'
+                  ? 'text-rose-700 bg-rose-50 border border-rose-100'
+                  : 'text-stone-500 hover:text-rose-600 hover:bg-rose-50/50'
+              }`}
             >
-              Dashboard Manager
+              Dashboard
             </button>
           </div>
         </div>
@@ -273,7 +287,7 @@ function App() {
       <main className="max-w-7xl mx-auto px-6 py-12">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <div className="text-sm uppercase tracking-widest text-zinc-400 animate-pulse">
+            <div className="text-sm uppercase tracking-widest text-stone-400 animate-pulse">
               Se încarcă datele din sistem...
             </div>
           </div>
@@ -289,21 +303,24 @@ function App() {
           <div className="space-y-12">
             {!isAdminLoggedIn ? (
               <div className="max-w-md mx-auto py-16">
-                <form onSubmit={handleLogin} className="bg-zinc-900/80 border border-white/10 p-8 rounded-3xl space-y-6 shadow-2xl">
-                  <h3 className="text-xl font-light uppercase tracking-widest text-center text-white">Logare Manager</h3>
+                <form onSubmit={handleLogin} className="bg-white border border-stone-100 p-8 rounded-3xl space-y-6 shadow-xl">
+                  <div className="text-center space-y-1 mb-2">
+                    <h3 className="text-xl font-light uppercase tracking-widest text-stone-900">Logare Manager</h3>
+                    <p className="text-xs text-stone-400">Acces exclusiv pentru administratori</p>
+                  </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-zinc-400 block mb-1">Parolă</label>
+                    <label className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">Parolă</label>
                     <input
                       type="password"
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3.5 text-sm text-stone-900 focus:outline-none focus:border-rose-300 transition-colors"
                     />
-                    {loginError && <p className="text-red-400 text-xs pt-1 font-medium">Parolă incorectă.</p>}
+                    {loginError && <p className="text-red-500 text-xs pt-1 font-medium">Parolă incorectă.</p>}
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-white text-black py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-zinc-200 transition-colors"
+                    className="w-full bg-rose-700 text-white py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-rose-800 transition-colors"
                   >
                     Intră în Dashboard
                   </button>
@@ -328,17 +345,18 @@ function App() {
         )}
       </main>
 
+      {/* Approval Modal */}
       {approvingRequest && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-900 border border-white/10 rounded-3xl max-w-sm w-full p-6 text-xs shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-100 rounded-3xl max-w-sm w-full p-6 text-xs shadow-2xl">
             <div className="mb-6 space-y-1">
-              <h3 className="text-base uppercase tracking-widest text-white font-light">Confirmă Contractul</h3>
-              <p className="text-zinc-400">Stabilește prețul negociat pentru {approvingRequest.clientName}.</p>
+              <h3 className="text-base uppercase tracking-widest text-stone-900 font-light">Confirmă Contractul</h3>
+              <p className="text-stone-500">Stabilește prețul negociat pentru {approvingRequest.clientName}.</p>
             </div>
 
             <form onSubmit={handleConfirmApproval} className="space-y-5">
               <div>
-                <label className="block text-zinc-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">
+                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">
                   Preț Negociat Meniu (€ / persoană)
                 </label>
                 <div className="relative">
@@ -348,32 +366,32 @@ function App() {
                     min="1"
                     value={negotiatedPrice}
                     onChange={(e) => setNegotiatedPrice(Number(e.target.value))}
-                    className="w-full bg-black border border-white/10 rounded-xl pl-4 pr-12 py-3.5 text-white focus:outline-none focus:border-white/30 text-base font-semibold"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-4 pr-16 py-3.5 text-stone-900 focus:outline-none focus:border-rose-300 text-base font-semibold transition-colors"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500 font-semibold">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-stone-400 font-semibold">
                     € / pers
                   </span>
                 </div>
               </div>
 
-              <div className="bg-black/30 border border-white/5 p-3 rounded-xl space-y-1 text-zinc-400">
-                <p>📅 Data: <span className="text-white font-mono">{approvingRequest.date}</span></p>
-                <p>👥 Invitați: <span className="text-white font-semibold">{approvingRequest.guests} persoane</span></p>
-                <p>📞 Contact: <span className="text-white font-mono">{approvingRequest.phone}</span></p>
-                <p>✉️ Email: <span className="text-white">{approvingRequest.email || 'Nespecificat'}</span></p>
+              <div className="bg-rose-50/60 border border-rose-100 p-3 rounded-xl space-y-1.5 text-stone-600">
+                <p>📅 Data: <span className="text-stone-900 font-mono">{approvingRequest.date}</span></p>
+                <p>👥 Invitați: <span className="text-stone-900 font-semibold">{approvingRequest.guests} persoane</span></p>
+                <p>📞 Contact: <span className="text-stone-900 font-mono">{approvingRequest.phone}</span></p>
+                <p>✉️ Email: <span className="text-stone-900">{approvingRequest.email || 'Nespecificat'}</span></p>
               </div>
 
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setApprovingRequest(null)}
-                  className="flex-1 bg-transparent border border-white/10 hover:bg-white/5 text-white py-3.5 rounded-xl uppercase tracking-widest text-[9px] font-semibold transition-colors"
+                  className="flex-1 bg-white border border-stone-200 hover:bg-stone-50 text-stone-600 py-3.5 rounded-xl uppercase tracking-widest text-[9px] font-semibold transition-colors"
                 >
                   Anulează
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-black hover:bg-zinc-200 py-3.5 rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors"
+                  className="flex-1 bg-rose-700 text-white hover:bg-rose-800 py-3.5 rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors"
                 >
                   Confirmă și Rezervă
                 </button>
