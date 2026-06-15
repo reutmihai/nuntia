@@ -39,15 +39,13 @@ function useCountdown(dateStr: string): TimeLeft {
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative w-full">
-        <div className="bg-zinc-900 border border-white/10 rounded-2xl px-4 py-6 text-center shadow-xl">
-          <span className="text-5xl sm:text-6xl font-extralight text-white tabular-nums leading-none">
-            {String(value).padStart(2, '0')}
-          </span>
-        </div>
+    <div className="flex flex-col items-center gap-2.5">
+      <div className="w-full bg-white border border-rose-100 rounded-2xl px-3 py-6 text-center shadow-sm">
+        <span className="text-5xl sm:text-6xl font-extralight text-rose-700 tabular-nums leading-none">
+          {String(value).padStart(2, '0')}
+        </span>
       </div>
-      <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">{label}</span>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">{label}</span>
     </div>
   );
 }
@@ -57,25 +55,22 @@ function Countdown({ dateStr }: { dateStr: string }) {
 
   if (isPast) {
     return (
-      <div className="text-center py-6">
-        <p className="text-zinc-400 text-sm uppercase tracking-widest">Ziua nunții a sosit! 🎉</p>
+      <div className="text-center py-8">
+        <p className="text-rose-600 text-sm uppercase tracking-widest font-medium">Ziua cea mare a sosit! ✨</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 text-center">Timp rămas până la nuntă</p>
-      <div className="grid grid-cols-4 gap-2 sm:gap-4 items-end">
+    <div className="space-y-3">
+      <p className="text-[10px] uppercase tracking-[0.25em] text-stone-400 text-center font-semibold">
+        Timp rămas până la nuntă
+      </p>
+      <div className="grid grid-cols-4 gap-3 sm:gap-4">
         <CountdownUnit value={days} label="Zile" />
         <CountdownUnit value={hours} label="Ore" />
         <CountdownUnit value={minutes} label="Minute" />
         <CountdownUnit value={seconds} label="Secunde" />
-      </div>
-      <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-1">
-        {[days, hours, minutes, seconds].map((_, i) => (
-          <div key={i} className="h-0.5 bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-full" />
-        ))}
       </div>
     </div>
   );
@@ -134,7 +129,7 @@ export default function ClientPortal() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (codeInput.trim()) lookupEvent(codeInput.trim());
   };
@@ -150,7 +145,7 @@ export default function ClientPortal() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <p className="text-sm uppercase tracking-widest text-zinc-400 animate-pulse">
+        <p className="text-sm uppercase tracking-widest text-stone-400 animate-pulse">
           Se verifică codul de acces...
         </p>
       </div>
@@ -161,20 +156,23 @@ export default function ClientPortal() {
     return (
       <div className="max-w-md mx-auto py-16">
         <div className="text-center mb-10 space-y-3">
-          <h2 className="text-2xl font-extralight uppercase tracking-widest text-white">
+          <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">💍</span>
+          </div>
+          <h2 className="text-2xl font-extralight uppercase tracking-widest text-stone-900">
             Portal Clienți
           </h2>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-stone-400 leading-relaxed">
             Introduceți codul unic primit pe e-mail pentru a accesa detaliile evenimentului dumneavoastră.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-zinc-900/80 border border-white/10 p-8 rounded-3xl space-y-6 shadow-2xl"
+          className="bg-white border border-stone-100 p-8 rounded-3xl space-y-6 shadow-xl"
         >
           <div className="space-y-1.5">
-            <label className="text-[10px] uppercase tracking-wider text-zinc-400 block mb-2">
+            <label className="text-[10px] uppercase tracking-wider text-stone-500 block mb-2">
               Cod de Acces
             </label>
             <input
@@ -182,15 +180,15 @@ export default function ClientPortal() {
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               placeholder="ex: abxs243sf9"
-              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white font-mono focus:outline-none focus:border-white/30 placeholder:text-zinc-700"
+              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3.5 text-sm text-stone-900 font-mono focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
             />
             {hasSearched && error && (
-              <p className="text-red-400 text-xs pt-1">{error}</p>
+              <p className="text-red-500 text-xs pt-1">{error}</p>
             )}
           </div>
           <button
             type="submit"
-            className="w-full bg-white text-black py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-zinc-200 transition-colors"
+            className="w-full bg-rose-700 text-white py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-rose-800 transition-colors"
           >
             Accesează Portalul
           </button>
@@ -202,37 +200,37 @@ export default function ClientPortal() {
   const totalEstimate = event.pricePerMeniu ? event.pricePerMeniu * event.guests : null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-10 py-8">
+    <div className="max-w-2xl mx-auto space-y-8 py-8">
 
       {/* Header */}
       <div className="space-y-1">
-        <p className="text-[10px] uppercase tracking-widest text-zinc-600 font-mono">{event.accessCode}</p>
-        <h2 className="text-3xl font-extralight uppercase tracking-widest text-white">{event.clientName}</h2>
-        <p className="text-xs text-zinc-500">Bun venit! Mai jos găsești toate detaliile evenimentului tău.</p>
+        <p className="text-[10px] uppercase tracking-widest text-stone-300 font-mono">{event.accessCode}</p>
+        <h2 className="text-3xl font-extralight uppercase tracking-widest text-stone-900">{event.clientName}</h2>
+        <p className="text-xs text-stone-400">Bun venit! Mai jos găsești toate detaliile evenimentului tău.</p>
       </div>
 
       {/* Countdown */}
-      <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6 sm:p-8">
+      <div className="bg-gradient-to-br from-rose-50 to-amber-50/40 border border-rose-100 rounded-3xl p-6 sm:p-8 shadow-sm">
         <Countdown dateStr={event.date} />
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-1.5">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Data</p>
-          <p className="text-white font-mono font-semibold text-sm">{event.date}</p>
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 space-y-1.5 shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-stone-400">Data</p>
+          <p className="text-stone-900 font-mono font-semibold text-sm">{event.date}</p>
         </div>
-        <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-1.5">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Salon</p>
-          <p className="text-white font-semibold text-sm">{event.salonName}</p>
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 space-y-1.5 shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-stone-400">Salon</p>
+          <p className="text-stone-900 font-semibold text-sm">{event.salonName}</p>
         </div>
-        <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-1.5">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Invitați</p>
-          <p className="text-white font-semibold text-sm">{event.guests} pers.</p>
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 space-y-1.5 shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-stone-400">Invitați</p>
+          <p className="text-stone-900 font-semibold text-sm">{event.guests} pers.</p>
         </div>
-        <div className="bg-zinc-900/60 border border-white/10 rounded-2xl p-5 space-y-1.5">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Preț Meniu</p>
-          <p className="text-emerald-400 font-semibold text-sm">
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 space-y-1.5 shadow-sm">
+          <p className="text-[10px] uppercase tracking-widest text-stone-400">Preț Meniu</p>
+          <p className="text-emerald-600 font-semibold text-sm">
             {event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'Nespecificat'}
           </p>
         </div>
@@ -240,22 +238,25 @@ export default function ClientPortal() {
 
       {/* Budget estimate */}
       {totalEstimate && (
-        <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-5 flex justify-between items-center">
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 flex justify-between items-center shadow-sm">
           <div className="space-y-0.5">
-            <p className="text-[10px] uppercase tracking-widest text-zinc-500">Estimare Totală</p>
-            <p className="text-xs text-zinc-500">{event.guests} pers. × {event.pricePerMeniu} €</p>
+            <p className="text-[10px] uppercase tracking-widest text-stone-400">Estimare Totală</p>
+            <p className="text-xs text-stone-400">{event.guests} pers. × {event.pricePerMeniu} €</p>
           </div>
-          <p className="text-2xl font-light text-white">{totalEstimate.toLocaleString('ro-RO')} €</p>
+          <p className="text-2xl font-light text-stone-900">{totalEstimate.toLocaleString('ro-RO')} €</p>
         </div>
       )}
 
       {/* Extra services */}
       {event.extraServices.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500">Servicii Extra Incluse</p>
+          <p className="text-[10px] uppercase tracking-widest text-stone-400">Servicii Extra Incluse</p>
           <div className="flex flex-wrap gap-2">
             {event.extraServices.map((service, idx) => (
-              <span key={idx} className="bg-zinc-900 border border-white/10 text-zinc-300 px-3 py-1.5 rounded-xl text-xs">
+              <span
+                key={idx}
+                className="bg-rose-50 border border-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-medium"
+              >
                 {service}
               </span>
             ))}
@@ -264,23 +265,23 @@ export default function ClientPortal() {
       )}
 
       {/* Contact */}
-      <div className="bg-zinc-900/40 border border-white/5 rounded-2xl p-5 space-y-3 text-xs">
-        <p className="text-[10px] uppercase tracking-widest text-zinc-500">Contact</p>
+      <div className="bg-stone-50 border border-stone-100 rounded-2xl p-5 space-y-3 text-xs">
+        <p className="text-[10px] uppercase tracking-widest text-stone-400">Contact</p>
         <div className="flex justify-between">
-          <span className="text-zinc-400">Telefon</span>
-          <span className="text-white font-mono">{event.phone}</span>
+          <span className="text-stone-400">Telefon</span>
+          <span className="text-stone-800 font-mono">{event.phone}</span>
         </div>
         {event.email && (
           <div className="flex justify-between">
-            <span className="text-zinc-400">Email</span>
-            <span className="text-white">{event.email}</span>
+            <span className="text-stone-400">Email</span>
+            <span className="text-stone-800">{event.email}</span>
           </div>
         )}
       </div>
 
       <button
         onClick={handleReset}
-        className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors underline underline-offset-4"
+        className="text-xs text-stone-400 hover:text-stone-600 transition-colors underline underline-offset-4"
       >
         Ieși din portal
       </button>
