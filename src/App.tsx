@@ -247,8 +247,12 @@ function App() {
     >
       {/* Overlay alb pentru lizibilitate — diferit per view */}
       <div className={`fixed inset-0 -z-10 transition-colors duration-700 ${
-        viewMode === 'public' ? 'bg-white/88' : viewMode === 'portal' ? 'bg-rose-50/84' : 'bg-stone-50/88'
+        viewMode === 'public' ? 'bg-white/88' : viewMode === 'portal' ? 'bg-rose-50/92' : 'bg-stone-50/93'
       }`} />
+      {/* Gradient suplimentar la baza ecranului pentru contrast carduri */}
+      {viewMode !== 'public' && (
+        <div className="fixed bottom-0 left-0 right-0 h-48 -z-10 bg-gradient-to-t from-white/60 to-transparent pointer-events-none" />
+      )}
 
       {/* Navigation */}
       <header className="sticky top-0 z-30">
@@ -283,7 +287,7 @@ function App() {
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-0.5 bg-stone-50/80 border border-stone-100 rounded-2xl p-1 shadow-inner">
-              {([ ['public', 'Home'], ['portal', 'Portal Mirat'], ['admin', 'Dashboard'] ] as const).map(([mode, label]) => (
+              {([ ['public', 'Home'], ['portal', 'Portal Mirat'], ['admin', 'Administrare'] ] as const).map(([mode, label]) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
@@ -316,7 +320,7 @@ function App() {
           {/* Mobile menu dropdown */}
           <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-56 opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="border-t border-stone-100 px-4 py-3 flex flex-col gap-1">
-              {([ ['public', 'Home', '🏠'], ['portal', 'Portal Mirat', '💍'], ['admin', 'Dashboard', '⚙️'] ] as const).map(([mode, label, icon]) => (
+              {([ ['public', 'Home', '🏠'], ['portal', 'Portal Mirat', '💍'], ['admin', 'Administrare', '⚙️'] ] as const).map(([mode, label, icon]) => (
                 <button
                   key={mode}
                   onClick={() => { setViewMode(mode); setIsMobileMenuOpen(false); }}
@@ -374,7 +378,7 @@ function App() {
                     type="submit"
                     className="w-full bg-rose-700 text-white py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-rose-800 transition-colors"
                   >
-                    Intră în Dashboard
+                    Intră în Administrare
                   </button>
                 </form>
               </div>

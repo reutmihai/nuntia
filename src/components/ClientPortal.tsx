@@ -156,21 +156,29 @@ export default function ClientPortal() {
     return (
       <div className="max-w-md mx-auto py-16">
         <div className="text-center mb-10 space-y-3">
-          <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">💍</span>
+          <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <span className="text-3xl">💍</span>
           </div>
           <h2 className="text-2xl font-extralight uppercase tracking-widest text-stone-900">
             Portal Clienți
           </h2>
-          <p className="text-xs text-stone-400 leading-relaxed">
-            Introduceți codul unic primit pe e-mail pentru a accesa detaliile evenimentului dumneavoastră.
+          <p className="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">
+            Spațiul tău privat pentru a urmări toate detaliile nunții.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white border border-stone-100 p-8 rounded-3xl space-y-6 shadow-xl"
+          className="bg-white border border-stone-100 p-8 rounded-3xl space-y-5 shadow-xl"
         >
+          {/* Context explicativ */}
+          <div className="flex items-start gap-3 bg-rose-50/70 border border-rose-100 rounded-2xl px-4 py-3.5">
+            <span className="text-rose-400 mt-0.5 shrink-0">✉️</span>
+            <p className="text-[11px] text-stone-500 leading-relaxed">
+              Codul de acces a fost trimis pe adresa ta de email imediat după ce evenimentul a fost confirmat de echipa noastră.
+            </p>
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wider text-stone-500 block mb-2">
               Cod de Acces
@@ -192,6 +200,10 @@ export default function ClientPortal() {
           >
             Accesează Portalul
           </button>
+
+          <p className="text-center text-[10px] text-stone-300 pt-1">
+            Nu ai primit codul? Contactează-ne la recepție.
+          </p>
         </form>
       </div>
     );

@@ -309,11 +309,11 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                         ? 'bg-rose-50 border-rose-200 text-rose-300 cursor-not-allowed'
                         : isPending
                           ? 'bg-amber-50 border-amber-200 text-amber-700'
-                          : 'bg-white border-stone-100 hover:border-rose-200 hover:bg-rose-50/40 text-stone-800 cursor-pointer'
+                          : 'bg-white border-rose-100 hover:border-rose-300 hover:bg-rose-50/50 text-stone-800 cursor-pointer shadow-sm hover:shadow-md'
                   }`}
                 >
                   <span className="text-xs sm:text-sm font-semibold">{day}</span>
-                  {/* Status label — ascuns pe mobile, vizibil de la sm */}
+                  {/* Status label desktop */}
                   <span className={`hidden sm:inline text-[9px] uppercase tracking-wider font-semibold ${
                     isPast
                       ? 'text-stone-300'
@@ -321,29 +321,34 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                         ? 'text-rose-400'
                         : isPending
                           ? 'text-amber-500'
-                          : 'text-stone-400 group-hover:text-rose-600'
+                          : 'text-rose-500 group-hover:text-rose-700'
                   }`}>
-                    {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă'}
+                    {isPast ? 'Expirat' : isOcupat ? 'Ocupat' : isPending ? 'În analiză' : 'Rezervă →'}
                   </span>
-                  {/* Dot indicator pe mobile în locul textului */}
-                  <span className={`sm:hidden w-1.5 h-1.5 rounded-full ${
-                    isPast ? 'bg-stone-300' : isOcupat ? 'bg-rose-400' : isPending ? 'bg-amber-400' : 'bg-stone-200 group-hover:bg-rose-400'
+                  {/* Indicator mobil — punct colorat mai mare */}
+                  <span className={`sm:hidden w-2 h-2 rounded-full ${
+                    isPast ? 'bg-stone-300' : isOcupat ? 'bg-rose-400' : isPending ? 'bg-amber-400' : 'bg-rose-300 group-hover:bg-rose-500'
                   }`} />
                 </button>
               );
             })}
           </div>
 
-          <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-stone-100">
+          <div className="flex flex-wrap gap-3 sm:gap-5 mt-6 pt-6 border-t border-stone-100">
             {[
-              { color: 'bg-white border-stone-200', label: 'Disponibil' },
-              { color: 'bg-rose-50 border-rose-200', label: 'Ocupat' },
-              { color: 'bg-amber-50 border-amber-200', label: 'În analiză' },
-              { color: 'bg-stone-50 border-stone-100 opacity-50', label: 'Trecut' },
-            ].map(({ color, label }) => (
-              <div key={label} className="flex items-center gap-2">
-                <div className={`w-4 h-4 rounded border ${color}`} />
-                <span className="text-[10px] text-stone-400 uppercase tracking-wider">{label}</span>
+              { color: 'bg-white border-rose-200 shadow-sm', dot: 'bg-rose-300', label: 'Disponibil', hint: 'Click pentru a rezerva' },
+              { color: 'bg-rose-50 border-rose-200', dot: 'bg-rose-400', label: 'Ocupat', hint: 'Data indisponibilă' },
+              { color: 'bg-amber-50 border-amber-200', dot: 'bg-amber-400', label: 'În analiză', hint: 'Cerere în așteptare' },
+              { color: 'bg-stone-50 border-stone-100 opacity-50', dot: 'bg-stone-300', label: 'Trecut', hint: 'Dată expirată' },
+            ].map(({ color, dot, label, hint }) => (
+              <div key={label} className="flex items-center gap-2.5 group">
+                <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${color}`}>
+                  <div className={`w-2 h-2 rounded-full ${dot}`} />
+                </div>
+                <div>
+                  <span className="text-xs text-stone-600 font-medium block leading-none">{label}</span>
+                  <span className="text-[9px] text-stone-400 hidden sm:block mt-0.5">{hint}</span>
+                </div>
               </div>
             ))}
           </div>
