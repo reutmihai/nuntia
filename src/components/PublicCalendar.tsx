@@ -14,7 +14,7 @@ const SALOANE = [
     capacity: '300 - 500 invitați',
     theme: 'Elegance Clasic',
     description: 'Candelabre de cristal, lumini calde ambientale și un design aristocratic, perfect pentru nunți mari și fastuoase.',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=85',
   },
   {
     id: 'imperial',
@@ -22,15 +22,35 @@ const SALOANE = [
     capacity: '100 - 300 invitați',
     theme: 'Boho-Chic & Modern',
     description: 'Stil greenery cu accente minimaliste, terasă exterioară integrată și o atmosferă intimă, ideală pentru petreceri moderne.',
-    image: 'https://images.unsplash.com/photo-1549417229-aa67d3263c09?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=85',
   }
 ];
 
 const SERVICII_EXTRA = [
-  { id: 'artificii', name: 'Artificii dansul mirilor', description: 'Spectacol de lumini la valsul de deschidere.' },
-  { id: 'fum_greu', name: 'Gheață carbonică (Fum greu)', description: 'Efect de nori joși pentru o atmosferă de basm.' },
-  { id: 'tort_shoturi', name: 'Tort de shot-uri (Shot Bar)', description: 'O experiență dinamică și modernă pentru invitați.' },
-  { id: 'candy_bar', name: 'Candy Bar Premium', description: 'Bufet de dulciuri artizanale personalizat tematic.' }
+  {
+    id: 'artificii',
+    name: 'Artificii dansul mirilor',
+    description: 'Spectacol de lumini la valsul de deschidere.',
+    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'fum_greu',
+    name: 'Gheață carbonică (Fum greu)',
+    description: 'Efect de nori joși pentru o atmosferă de basm.',
+    image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'tort_shoturi',
+    name: 'Tort de shot-uri (Shot Bar)',
+    description: 'O experiență dinamică și modernă pentru invitați.',
+    image: 'https://images.unsplash.com/photo-1574691250077-03a929faece5?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'candy_bar',
+    name: 'Candy Bar Premium',
+    description: 'Bufet de dulciuri artizanale personalizat tematic.',
+    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80',
+  }
 ];
 
 const MONTHS = [
@@ -47,7 +67,6 @@ function getDaysInMonth(year: number, monthIndex: number) {
   const firstDay = new Date(year, monthIndex, 1);
   const firstDayOfWeek = firstDay.getDay();
   const adjustedFirstDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
   for (let i = 0; i < adjustedFirstDay; i++) days.push(null);
   const totalDays = new Date(year, monthIndex + 1, 0).getDate();
   for (let i = 1; i <= totalDays; i++) days.push(i);
@@ -119,13 +138,13 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
   return (
     <div className="space-y-20 max-w-5xl mx-auto">
 
-      {/* Hero */}
+      {/* ─── HERO ─────────────────────────────────────────────── */}
       <div className="relative rounded-3xl overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80')" }}
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')" }}
         />
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-white/65 backdrop-blur-[2px]" />
         <div className="relative z-10 text-center space-y-6 px-8 py-24">
           <p className="text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
           <h1 className="text-5xl font-extralight uppercase tracking-widest text-stone-900 leading-tight">
@@ -143,7 +162,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         </div>
       </div>
 
-      {/* Saloane */}
+      {/* ─── SALOANE ──────────────────────────────────────────── */}
       <div className="space-y-8">
         <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
           <div className="w-1 h-5 bg-rose-600 rounded-full" />
@@ -184,7 +203,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         </div>
       </div>
 
-      {/* Servicii Extra */}
+      {/* ─── SERVICII EXTRA ───────────────────────────────────── */}
       <div className="space-y-8">
         <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
           <div className="w-1 h-5 bg-rose-600 rounded-full" />
@@ -192,16 +211,26 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {SERVICII_EXTRA.map((service) => (
-            <div key={service.id} className="bg-rose-50/60 border border-rose-100 p-5 rounded-2xl space-y-2 hover:border-rose-200 hover:shadow-sm transition-all">
-              <h4 className="text-xs font-semibold text-stone-800 tracking-wide">{service.name}</h4>
-              <p className="text-[11px] text-stone-500 font-light leading-relaxed">{service.description}</p>
+            <div key={service.id} className="bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+              <div className="h-40 overflow-hidden relative">
+                <img
+                  src={service.image}
+                  alt={service.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              </div>
+              <div className="p-4 space-y-1.5">
+                <h4 className="text-xs font-semibold text-stone-800 tracking-wide">{service.name}</h4>
+                <p className="text-[11px] text-stone-500 font-light leading-relaxed">{service.description}</p>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Calendar */}
-      <div id="calendar-section" className="space-y-6 pt-6">
+      {/* ─── CALENDAR ─────────────────────────────────────────── */}
+      <div id="calendar-section" className="space-y-6 pt-6 scroll-mt-24">
         <div className="border-b border-stone-100 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="w-1 h-5 bg-rose-600 rounded-full" />
@@ -300,7 +329,6 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
             })}
           </div>
 
-          {/* Legenda */}
           <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-stone-100">
             {[
               { color: 'bg-white border-stone-200', label: 'Disponibil' },
@@ -317,7 +345,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         </div>
       </div>
 
-      {/* Modal formular */}
+      {/* ─── MODAL FORMULAR ───────────────────────────────────── */}
       {showFormModal && (
         <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-white border border-stone-100 rounded-3xl max-w-md w-full p-6 text-xs shadow-2xl relative max-h-[90vh] overflow-y-auto">
