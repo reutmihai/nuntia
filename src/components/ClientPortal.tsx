@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, MesaItem, CourseKey } from '../types';
+import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, MesaItem, CourseKey, SeatingTableLayout } from '../types';
+import SeatingDashboard from './SeatingDashboard';
 
 // ─── Countdown ────────────────────────────────────────────────────────────────
 
@@ -296,7 +297,7 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
 
 // ─── Tab: Aranjament Mese ─────────────────────────────────────────────────────
 
-function TabMese({ event }: { event: ConfirmedEvent }) {
+function TabMese({ event, onOpenDashboard }: { event: ConfirmedEvent; onOpenDashboard: () => void }) {
   const [tables, setTables] = useState<MesaItem[]>(event.tablesData ?? []);
   const [newMasa, setNewMasa] = useState('');
   const [guestInputs, setGuestInputs] = useState<Record<string, string>>({});
@@ -322,6 +323,18 @@ function TabMese({ event }: { event: ConfirmedEvent }) {
 
   return (
     <div className="space-y-4">
+      {/* Visual dashboard button */}
+      <button
+        onClick={onOpenDashboard}
+        className="w-full flex items-center justify-between bg-gradient-to-r from-rose-50 to-amber-50/40 border border-rose-100 hover:border-rose-200 hover:shadow-sm rounded-2xl px-5 py-4 transition-all group"
+      >
+        <div className="text-left space-y-0.5">
+          <p className="text-sm font-semibold text-stone-800 group-hover:text-rose-700 transition-colors">Plan vizual interactiv</p>
+          <p className="text-[11px] text-stone-400">Aranjează mesele pe canvas cu drag & drop, asignează invitați per scaun</p>
+        </div>
+        <span className="text-rose-400 text-2xl shrink-0 ml-4 group-hover:translate-x-1 transition-transform">→</span>
+      </button>
+
       {tables.length > 0 && (
         <div className="flex items-center justify-between px-1">
           <p className="text-[10px] uppercase tracking-widest text-stone-400">{tables.length} mese</p>
@@ -503,6 +516,7 @@ export default function ClientPortal() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('detalii');
+  const [showSeatingDashboard, setShowSeatingDashboard] = useState(false);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
@@ -536,6 +550,7 @@ export default function ClientPortal() {
         menuData: normalizeMenu(data.menu_data),
         scheduleData: data.schedule_data || [],
         tablesData: data.tables_data || [],
+        seatingLayout: (data.seating_layout as SeatingTableLayout[]) || [],
       });
     } catch { setError('A apărut o eroare. Încearcă din nou.'); }
     finally { setIsLoading(false); }
@@ -625,13 +640,17 @@ export default function ClientPortal() {
         {activeTab === 'detalii' && <TabDetalii event={event} />}
         {activeTab === 'meniu' && <TabMeniu event={event} />}
         {activeTab === 'program' && <TabProgram event={event} />}
-        {activeTab === 'mese' && <TabMese event={event} />}
+        {activeTab === 'mese' && <TabMese event={event} onOpenDashboard={() => setShowSeatingDashboard(true)} />}
       </div>
 
       <button onClick={handleReset}
         className="text-xs text-stone-400 hover:text-stone-600 transition-colors underline underline-offset-4">
         Ieși din portal
       </button>
+
+      {showSeatingDashboard && (
+        <SeatingDashboard event={event} onClose={() => setShowSeatingDashboard(false)} />
+      )}
     </div>
   );
 }
