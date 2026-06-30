@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, CourseKey, SeatingTableLayout } from '../types';
 import SeatingDashboard from './SeatingDashboard';
@@ -375,6 +375,13 @@ export default function ClientPortal() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('detalii');
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!tabsRef.current) return;
+    const active = tabsRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
+    active?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [activeTab]);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
@@ -479,20 +486,33 @@ export default function ClientPortal() {
 
       {/* Tabs */}
       <div className="space-y-5">
-        <div className="flex border-b border-stone-100 overflow-x-auto">
-          {TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px ${
-                activeTab === tab.id
-                  ? 'border-rose-600 text-rose-700'
-                  : 'border-transparent text-stone-400 hover:text-stone-600'
-              }`}
+        {/* Tab nav: sticky under the app header, hides native scrollbar, gradient fades at edges */}
+        <div className="sticky top-14 z-20 -mx-4 sm:-mx-0 bg-white/95 backdrop-blur-sm rounded-none sm:rounded-2xl">
+          <div className="relative">
+            <div
+              ref={tabsRef}
+              className="flex overflow-x-auto scrollbar-hide border-b border-stone-100 scroll-smooth px-1"
             >
-              {tab.label}
-            </button>
-          ))}
+              {TABS.map(tab => (
+                <button
+                  key={tab.id}
+                  data-active={activeTab === tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 sm:px-5 py-3 text-[11px] uppercase tracking-widest font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px flex-shrink-0 ${
+                    activeTab === tab.id
+                      ? 'border-rose-600 text-rose-700'
+                      : 'border-transparent text-stone-400 hover:text-stone-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {/* Left fade — indicates more tabs to the left */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/95 to-transparent" />
+            {/* Right fade — indicates more tabs to the right */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/95 to-transparent" />
+          </div>
         </div>
 
         {activeTab === 'detalii' && <TabDetalii event={event} />}
