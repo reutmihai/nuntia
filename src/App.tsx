@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import PublicCalendar from './components/PublicCalendar';
 import AdminInbox from './components/AdminInbox';
 import ConfirmedEvents from './components/ConfirmedEvents';
+import AdminMeniuri from './components/AdminMeniuri';
+import PublicMenu from './components/PublicMenu';
 import { supabase } from './supabaseClient';
 import emailjs from '@emailjs/browser';
 import ClientPortal from './components/ClientPortal';
@@ -12,13 +14,14 @@ export type { BookingRequest, ConfirmedEvent };
 const RESTAURANT = { name: 'Ballroom', location: 'Suceava' };
 
 const EMAILJS = {
-  serviceID: 'service_oltwxis',
-  templateID: 'template_twteifr',
-  publicKey: 'NAOMobCBnJ4bDxI7g',
+  serviceID: import.meta.env.VITE_EMAILJS_SERVICE_ID as string,
+  templateID: import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string,
+  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string,
 };
 
 function App() {
-  const [viewMode, setViewMode] = useState<'public' | 'admin' | 'portal'>('public');
+  const [viewMode, setViewMode] = useState<'public' | 'meniu' | 'portal' | 'admin'>('public');
+  const [adminSection, setAdminSection] = useState<'cereri' | 'evenimente' | 'meniuri'>('cereri');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState(false);
@@ -144,10 +147,16 @@ function App() {
 
     const eventId = `e-${Date.now()}`;
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    const generatedAccessCode = Array.from(
-      { length: 10 },
-      () => chars[Math.floor(Math.random() * chars.length)]
-    ).join('');
+    const removeDiacritics = (s: string) =>
+      s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const normalizedName = removeDiacritics(approvingRequest.clientName.toLowerCase().trim());
+    const nameParts = normalizedName.split(/(?:\s*&\s*|\s+si\s+)/);
+    const nameSlug = (nameParts.length >= 2 ? nameParts.slice(0, 2) : normalizedName.split(/\s+/).slice(0, 2))
+      .map(p => p.trim().split(/\s+/).pop()!.replace(/[^a-z0-9]/g, '').slice(0, 10))
+      .filter(Boolean)
+      .join('-');
+    const randomSuffix = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const generatedAccessCode = nameSlug ? `${nameSlug}-${randomSuffix}` : randomSuffix + randomSuffix;
 
     try {
       const { error: insertError } = await supabase
@@ -205,7 +214,7 @@ function App() {
       setBookingRequests(prev => prev.filter(b => b.id !== approvingRequest.id));
       setApprovingRequest(null);
 
-      alert(`Contract confirmat cu succes!\n\nCod acces portal: ${generatedAccessCode}\nE-mailul a fost trimis către ${approvingRequest.email}.`);
+      alert(`Contract confirmat cu succes!\n\nE-mailul cu linkul de acces a fost trimis către ${approvingRequest.email}.`);
     } catch (error) {
       console.error('Error approving booking request:', error);
       alert('Nu s-a putut finaliza aprobarea contractului.');
@@ -224,7 +233,6 @@ function App() {
   };
 
   const handleCancelEvent = async (id: string) => {
-    if (!window.confirm('Anulezi acest contract? Data va fi eliberată în calendar.')) return;
     try {
       const { error } = await supabase.from('confirmed_events').delete().eq('id', id);
       if (error) throw error;
@@ -236,6 +244,7 @@ function App() {
 
   const BG_IMAGES: Record<typeof viewMode, string> = {
     public: "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')",
+    meniu:  "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')",
     portal: "url('https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1920&q=85')",
     admin:  "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=85')",
   };
@@ -351,7 +360,7 @@ function App() {
 
             {/* Desktop nav — culori discrete */}
             <nav className="hidden md:flex items-center gap-0.5 bg-stone-100/60 border border-stone-200/60 rounded-2xl p-1">
-              {([ ['public', 'Home'], ['portal', 'Evenimentul Meu'], ['admin', 'Administrare'] ] as const).map(([mode, label]) => (
+              {([ ['public', 'Home'], ['meniu', 'Meniu'], ['portal', 'Evenimentul Meu'], ['admin', 'Administrare'] ] as const).map(([mode, label]) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
@@ -379,9 +388,9 @@ function App() {
           </div>
 
           {/* Mobile menu dropdown */}
-          <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-56 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-72 opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="border-t border-stone-100 px-4 py-3 flex flex-col gap-1">
-              {([ ['public', 'Home', '🏠'], ['portal', 'Evenimentul Meu', '💍'], ['admin', 'Administrare', '⚙️'] ] as const).map(([mode, label, icon]) => (
+              {([ ['public', 'Home', '🏠'], ['meniu', 'Meniu', '🍽️'], ['portal', 'Evenimentul Meu', '💍'], ['admin', 'Administrare', '⚙️'] ] as const).map(([mode, label, icon]) => (
                 <button
                   key={mode}
                   onClick={() => { setViewMode(mode); setIsMobileMenuOpen(false); }}
@@ -414,10 +423,12 @@ function App() {
             bookingRequests={bookingRequests}
             onAddRequest={handleAddRequest}
           />
+        ) : viewMode === 'meniu' ? (
+          <PublicMenu />
         ) : viewMode === 'portal' ? (
           <ClientPortal />
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-8">
             {!isAdminLoggedIn ? (
               <div className="max-w-md mx-auto py-16">
                 <form onSubmit={handleLogin} className="bg-white border border-stone-100 p-8 rounded-3xl space-y-6 shadow-xl">
@@ -444,19 +455,39 @@ function App() {
                 </form>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <AdminInbox
-                  bookingRequests={bookingRequests}
-                  onApprove={triggerApproveFlow}
-                  onReject={handleRejectRequest}
-                />
-                <div className="lg:col-span-2">
+              <>
+                {/* Admin section tabs */}
+                <div className="flex gap-1 bg-stone-100/60 border border-stone-200/60 rounded-2xl p-1 w-fit">
+                  {(['cereri', 'evenimente', 'meniuri'] as const).map(section => (
+                    <button
+                      key={section}
+                      onClick={() => setAdminSection(section)}
+                      className={`px-5 py-2 rounded-xl text-[11px] font-medium uppercase tracking-wider transition-all duration-200 ${
+                        adminSection === section
+                          ? 'bg-white text-stone-700 shadow-sm border border-stone-200/80'
+                          : 'text-stone-400 hover:text-stone-600 hover:bg-white/50'
+                      }`}
+                    >
+                      {section === 'cereri' ? 'Cereri' : section === 'evenimente' ? 'Evenimente' : 'Meniuri'}
+                    </button>
+                  ))}
+                </div>
+
+                {adminSection === 'meniuri' ? (
+                  <AdminMeniuri />
+                ) : adminSection === 'evenimente' ? (
                   <ConfirmedEvents
                     confirmedEvents={confirmedEvents}
                     onCancelEvent={handleCancelEvent}
                   />
-                </div>
-              </div>
+                ) : (
+                  <AdminInbox
+                    bookingRequests={bookingRequests}
+                    onApprove={triggerApproveFlow}
+                    onReject={handleRejectRequest}
+                  />
+                )}
+              </>
             )}
           </div>
         )}
