@@ -130,6 +130,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   const [saved, setSaved] = useState(false);
   const [guestSearch, setGuestSearch] = useState('');
   const [linkCopied, setLinkCopied] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const lastClickRef = useRef(0);
 
@@ -239,37 +240,74 @@ export default function SeatingDashboard({ event, onClose }: Props) {
     <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col" onClick={() => setSelectedId(null)}>
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-stone-200 shadow-sm shrink-0" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 bg-white border-b border-stone-200 shadow-sm shrink-0" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          {/* Mobile sidebar toggle */}
+          <button onClick={() => setSidebarOpen(v => !v)}
+            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-500 hover:border-stone-300 transition-colors text-base shrink-0">
+            ☰
+          </button>
           <button onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 hover:text-stone-700 hover:border-stone-300 transition-colors text-lg">
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 hover:text-stone-700 hover:border-stone-300 transition-colors text-lg shrink-0">
             ←
           </button>
-          <div>
-            <p className="text-[10px] uppercase tracking-widest text-stone-400">Plan aranjament mese</p>
-            <p className="text-sm font-semibold text-stone-800">{event.clientName} · <span className="text-stone-400 font-normal">{event.date}</span></p>
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-widest text-stone-400 hidden sm:block">Plan aranjament mese</p>
+            <p className="text-sm font-semibold text-stone-800 truncate">
+              <span className="hidden xs:inline">{event.clientName} · </span>
+              <span className="text-stone-400 font-normal">{event.date}</span>
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-stone-400 hidden sm:block">
-            {tables.length} mese · {totalGuests}/{totalSeats} locuri ocupate
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="text-xs text-stone-400 hidden lg:block">
+            {tables.length} mese · {totalGuests}/{totalSeats} locuri
           </span>
-          <p className="text-[10px] text-stone-300 hidden md:block">Dublu-click pe masă pentru invitați</p>
+          <p className="text-[10px] text-stone-300 hidden xl:block">Dublu-click pe masă pentru invitați</p>
           <button onClick={copyPublicLink}
-            className="border border-stone-200 hover:border-rose-200 text-stone-500 hover:text-rose-600 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap">
-            {linkCopied ? '✓ Copiat!' : '⤢ Link public'}
+            className="hidden sm:block border border-stone-200 hover:border-rose-200 text-stone-500 hover:text-rose-600 px-3 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap">
+            {linkCopied ? '✓ Copiat!' : '⤢ Link'}
           </button>
           <button onClick={handleSave} disabled={saving}
-            className="bg-rose-700 hover:bg-rose-800 text-white px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60">
-            {saving ? 'Se salvează...' : saved ? '✓ Salvat' : 'Salvează'}
+            className="bg-rose-700 hover:bg-rose-800 text-white px-3 sm:px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60 whitespace-nowrap">
+            {saving ? '...' : saved ? '✓' : 'Salvează'}
           </button>
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 relative">
+
+        {/* Mobile backdrop */}
+        {sidebarOpen && (
+          <div className="absolute inset-0 bg-black/30 z-10 md:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
 
         {/* ── Left sidebar ── */}
-        <div className="w-56 bg-white border-r border-stone-200 flex flex-col shrink-0 overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div
+          className={`
+            absolute md:relative z-20 inset-y-0 left-0 h-full
+            w-64 md:w-56 bg-white border-r border-stone-200
+            flex flex-col shrink-0 overflow-y-auto
+            transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full md:translate-x-0 md:shadow-none'}
+          `}
+          onClick={e => e.stopPropagation()}
+        >
+
+          {/* Sidebar header (mobile) */}
+          <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-stone-100">
+            <p className="text-[10px] uppercase tracking-widest text-stone-500 font-semibold">Panou mese</p>
+            <div className="flex items-center gap-2">
+              <button onClick={copyPublicLink}
+                className="text-[10px] border border-stone-200 text-stone-500 px-2.5 py-1 rounded-lg uppercase tracking-wider transition-colors">
+                {linkCopied ? '✓' : '⤢ Link'}
+              </button>
+              <button onClick={() => setSidebarOpen(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 text-lg leading-none">
+                ×
+              </button>
+            </div>
+          </div>
 
           {/* Add table */}
           <div className="p-4 border-b border-stone-100 space-y-3">
@@ -350,7 +388,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                   <p className="text-[10px] text-stone-300 italic text-center py-2">Niciun rezultat.</p>
                 ) : (
                   guestSearchResults.map(({ guest, table }, i) => (
-                    <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); }}
+                    <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); setSidebarOpen(false); }}
                       className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition-colors text-left">
                       <span className="text-xs text-stone-700 truncate">{guest}</span>
                       <span className="text-[10px] text-rose-500 font-semibold shrink-0 ml-2 truncate">{table.name}</span>
@@ -437,7 +475,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
               onClick={() => setEditingTableId(null)}
             >
               <div
-                className="bg-white rounded-2xl shadow-2xl w-80 flex flex-col max-h-[70vh] border border-stone-100"
+                className="bg-white rounded-2xl shadow-2xl w-[calc(100vw-1.5rem)] sm:w-80 flex flex-col max-h-[85vh] sm:max-h-[70vh] border border-stone-100"
                 onClick={e => e.stopPropagation()}
               >
                 {/* Modal header */}
