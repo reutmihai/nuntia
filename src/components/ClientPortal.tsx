@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, MesaItem, CourseKey } from '../types';
+import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, CourseKey, SeatingTableLayout } from '../types';
+import SeatingDashboard from './SeatingDashboard';
 
 // ─── Countdown ────────────────────────────────────────────────────────────────
 
@@ -294,135 +295,6 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
   );
 }
 
-// ─── Tab: Aranjament Mese ─────────────────────────────────────────────────────
-
-function TabMese({ event }: { event: ConfirmedEvent }) {
-  const [tables, setTables] = useState<MesaItem[]>(event.tablesData ?? []);
-  const [newMasa, setNewMasa] = useState('');
-  const [guestInputs, setGuestInputs] = useState<Record<string, string>>({});
-  const { save, saving, saved } = useSave(event.id, 'tables_data');
-
-  const addTable = () => {
-    if (!newMasa.trim()) return;
-    setTables(prev => [...prev, { id: Date.now().toString(), masa: newMasa.trim(), invitati: [] }]);
-    setNewMasa('');
-  };
-
-  const addGuest = (tableId: string) => {
-    const name = (guestInputs[tableId] ?? '').trim();
-    if (!name) return;
-    setTables(prev => prev.map(t => t.id === tableId ? { ...t, invitati: [...t.invitati, name] } : t));
-    setGuestInputs(prev => ({ ...prev, [tableId]: '' }));
-  };
-
-  const removeGuest = (tableId: string, idx: number) =>
-    setTables(prev => prev.map(t => t.id === tableId ? { ...t, invitati: t.invitati.filter((_, i) => i !== idx) } : t));
-
-  const totalGuests = tables.reduce((sum, t) => sum + t.invitati.length, 0);
-
-  return (
-    <div className="space-y-4">
-      {tables.length > 0 && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-[10px] uppercase tracking-widest text-stone-400">{tables.length} mese</p>
-          <p className="text-[10px] uppercase tracking-widest text-stone-400">{totalGuests} invitați plasați</p>
-        </div>
-      )}
-
-      {tables.length === 0 ? (
-        <div className="bg-white border border-dashed border-stone-200 rounded-2xl p-10 text-center">
-          <p className="text-stone-300 text-xs">Nicio masă adăugată încă.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {tables.map(table => (
-            <div key={table.id} className="bg-white border border-stone-100 rounded-2xl p-5 space-y-3 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-stone-900 text-sm">{table.masa}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-stone-400 bg-stone-50 border border-stone-100 px-2 py-0.5 rounded-full">
-                    {table.invitati.length} pers.
-                  </span>
-                  <button
-                    onClick={() => setTables(prev => prev.filter(t => t.id !== table.id))}
-                    className="text-stone-300 hover:text-red-400 transition-colors text-xl leading-none"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 min-h-[24px]">
-                {table.invitati.map((guest, idx) => (
-                  <span
-                    key={idx}
-                    className="flex items-center gap-1 bg-rose-50 border border-rose-100 text-rose-700 pl-2.5 pr-1.5 py-1 rounded-full text-xs"
-                  >
-                    {guest}
-                    <button
-                      onClick={() => removeGuest(table.id, idx)}
-                      className="text-rose-300 hover:text-rose-600 transition-colors leading-none"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex gap-1.5">
-                <input
-                  type="text"
-                  value={guestInputs[table.id] ?? ''}
-                  onChange={e => setGuestInputs(prev => ({ ...prev, [table.id]: e.target.value }))}
-                  onKeyDown={e => e.key === 'Enter' && addGuest(table.id)}
-                  placeholder="Adaugă invitat..."
-                  className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
-                />
-                <button
-                  onClick={() => addGuest(table.id)}
-                  disabled={!(guestInputs[table.id] ?? '').trim()}
-                  className="bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-40"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="bg-stone-50 border border-stone-100 rounded-2xl p-4">
-        <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold mb-3">Adaugă masă</p>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newMasa}
-            onChange={e => setNewMasa(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addTable()}
-            placeholder="ex: Masa Mirilor, Masa 1, Nași..."
-            className="flex-1 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
-          />
-          <button
-            onClick={addTable}
-            disabled={!newMasa.trim()}
-            className="bg-rose-700 text-white px-4 py-2.5 rounded-xl text-sm font-light hover:bg-rose-800 transition-colors disabled:opacity-40"
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      <button
-        onClick={() => save(tables)}
-        disabled={saving}
-        className="w-full py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs transition-colors disabled:opacity-60 bg-rose-700 text-white hover:bg-rose-800"
-      >
-        {saving ? 'Se salvează...' : saved ? '✓ Salvat' : 'Salvează Aranjamentul'}
-      </button>
-    </div>
-  );
-}
-
 // ─── Tab: Detalii (overview) ──────────────────────────────────────────────────
 
 function TabDetalii({ event }: { event: ConfirmedEvent }) {
@@ -536,6 +408,7 @@ export default function ClientPortal() {
         menuData: normalizeMenu(data.menu_data),
         scheduleData: data.schedule_data || [],
         tablesData: data.tables_data || [],
+        seatingLayout: (data.seating_layout as SeatingTableLayout[]) || [],
       });
     } catch { setError('A apărut o eroare. Încearcă din nou.'); }
     finally { setIsLoading(false); }
@@ -625,13 +498,16 @@ export default function ClientPortal() {
         {activeTab === 'detalii' && <TabDetalii event={event} />}
         {activeTab === 'meniu' && <TabMeniu event={event} />}
         {activeTab === 'program' && <TabProgram event={event} />}
-        {activeTab === 'mese' && <TabMese event={event} />}
       </div>
 
       <button onClick={handleReset}
         className="text-xs text-stone-400 hover:text-stone-600 transition-colors underline underline-offset-4">
         Ieși din portal
       </button>
+
+      {activeTab === 'mese' && (
+        <SeatingDashboard event={event} onClose={() => setActiveTab('detalii')} />
+      )}
     </div>
   );
 }
