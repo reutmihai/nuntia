@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import type { ConfirmedEvent, SeatingTableLayout } from '../types';
 
-// ─── Migrate old data format (assignments[] → guests[]) ───────────────────────
+// ─── Migrate old data format ──────────────────────────────────────────────────
 
 function migrateTable(raw: Record<string, unknown>): SeatingTableLayout {
   let guests: string[] = [];
@@ -75,7 +75,6 @@ function RectTableSVG({ table, selected }: { table: SeatingTableLayout; selected
   const TOTAL_H = TH + PAD * 2;
   const occupied = table.guests.length;
   const label = table.name.length > 12 ? table.name.slice(0, 11) + '…' : table.name;
-
   const sx = (count: number, i: number) => (TW / (count + 1)) * (i + 1);
 
   return (
@@ -94,18 +93,14 @@ function RectTableSVG({ table, selected }: { table: SeatingTableLayout; selected
       {Array.from({ length: topCount }).map((_, i) => (
         <circle key={`t${i}`} cx={sx(topCount, i)} cy={SR} r={SR}
           fill={i < occupied ? '#fce7f3' : 'white'}
-          stroke={i < occupied ? '#f9a8d4' : '#e5e7eb'}
-          strokeWidth="1"
-        />
+          stroke={i < occupied ? '#f9a8d4' : '#e5e7eb'} strokeWidth="1" />
       ))}
       {Array.from({ length: botCount }).map((_, i) => {
-        const seatIdx = topCount + i;
+        const idx = topCount + i;
         return (
           <circle key={`b${i}`} cx={sx(botCount, i)} cy={TOTAL_H - SR} r={SR}
-            fill={seatIdx < occupied ? '#fce7f3' : 'white'}
-            stroke={seatIdx < occupied ? '#f9a8d4' : '#e5e7eb'}
-            strokeWidth="1"
-          />
+            fill={idx < occupied ? '#fce7f3' : 'white'}
+            stroke={idx < occupied ? '#f9a8d4' : '#e5e7eb'} strokeWidth="1" />
         );
       })}
     </svg>
@@ -130,7 +125,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   const [saved, setSaved] = useState(false);
   const [guestSearch, setGuestSearch] = useState('');
   const [linkCopied, setLinkCopied] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Mobile: which sheet is open (null = none, 'add' = add table, 'search' = search, 'rename' = rename)
+  const [mobileSheet, setMobileSheet] = useState<null | 'add' | 'search' | 'rename'>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const lastClickRef = useRef(0);
 
@@ -146,7 +142,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
 
   const handleTablePointerDown = (e: React.PointerEvent, table: SeatingTableLayout) => {
     const now = Date.now();
-    if (now - lastClickRef.current < 280) return; // double-click — let onDoubleClick handle it
+    if (now - lastClickRef.current < 280) return;
     e.stopPropagation();
     if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -154,6 +150,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
     const cy = ((e.clientY - rect.top) / rect.height) * 100;
     setDragging({ id: table.id, offsetX: cx - table.x, offsetY: cy - table.y, moved: false });
     setSelectedId(table.id);
+    setMobileSheet(null);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
@@ -173,6 +170,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
     lastClickRef.current = Date.now();
     setEditingTableId(table.id);
     setGuestInput('');
+    setMobileSheet(null);
   };
 
   // ─── Guest editor ──────────────────────────────────────────────────────────
@@ -199,11 +197,13 @@ export default function SeatingDashboard({ event, onClose }: Props) {
       shape: newShape, seats: newSeats, guests: [],
     }]);
     setSelectedId(id);
+    setMobileSheet(null);
   };
 
   const deleteSelected = () => {
     setTables(prev => prev.filter(t => t.id !== selectedId));
     setSelectedId(null);
+    setMobileSheet(null);
   };
 
   const renameSelected = (name: string) =>
@@ -225,9 +225,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
 
   const guestSearchResults: GuestEntry[] = guestSearch.trim().length >= 2
     ? tables.flatMap(t =>
-        t.guests
-          .filter(g => g.toLowerCase().includes(guestSearch.toLowerCase()))
-          .map(g => ({ guest: g, table: t }))
+        t.guests.filter(g => g.toLowerCase().includes(guestSearch.toLowerCase())).map(g => ({ guest: g, table: t }))
       )
     : [];
 
@@ -236,109 +234,107 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   const totalGuests = tables.reduce((s, t) => s + t.guests.length, 0);
   const totalSeats = tables.reduce((s, t) => s + t.seats, 0);
 
+  // ─── Sidebar content (reused on both desktop and mobile sheet) ────────────
+
+  const SidebarAddTable = () => (
+    <div className="p-4 border-b border-stone-100 space-y-3">
+      <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Adaugă masă</p>
+      <div className="grid grid-cols-2 gap-1.5">
+        {(['round', 'rectangular'] as const).map(shape => (
+          <button key={shape} onClick={() => setNewShape(shape)}
+            className={`py-2.5 rounded-xl border text-[11px] uppercase tracking-wider font-semibold transition-colors ${
+              newShape === shape ? 'bg-rose-50 border-rose-200 text-rose-700' : 'border-stone-200 text-stone-400 hover:border-stone-300'
+            }`}>
+            {shape === 'round' ? '⭕ Rotundă' : '▬ Rect.'}
+          </button>
+        ))}
+      </div>
+      <div>
+        <div className="flex justify-between text-[10px] text-stone-400 mb-1">
+          <span className="uppercase tracking-wider">Scaune</span>
+          <span className="font-semibold text-stone-700">{newSeats}</span>
+        </div>
+        <input type="range" min={2} max={30} value={newSeats}
+          onChange={e => setNewSeats(Number(e.target.value))}
+          className="w-full accent-rose-600" />
+        <div className="flex justify-between text-[9px] text-stone-300 mt-0.5"><span>2</span><span>30</span></div>
+      </div>
+      <button onClick={addTable}
+        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
+        + Adaugă masă
+      </button>
+    </div>
+  );
+
+  const SidebarSearch = () => (
+    <div className="p-4 space-y-2">
+      <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Caută invitat</p>
+      <div className="relative">
+        <input
+          type="text" autoFocus
+          value={guestSearch}
+          onChange={e => setGuestSearch(e.target.value)}
+          placeholder="Nume invitat..."
+          className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors pr-8"
+        />
+        {guestSearch && (
+          <button onClick={() => setGuestSearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 text-xl leading-none">×</button>
+        )}
+      </div>
+      {guestSearch.trim().length >= 2 && (
+        <div className="space-y-1 max-h-52 overflow-y-auto">
+          {guestSearchResults.length === 0 ? (
+            <p className="text-[11px] text-stone-300 italic text-center py-3">Niciun rezultat.</p>
+          ) : guestSearchResults.map(({ guest, table }, i) => (
+            <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); setMobileSheet(null); }}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-rose-50 transition-colors text-left border border-transparent hover:border-rose-100">
+              <span className="text-sm text-stone-700 truncate">{guest}</span>
+              <span className="text-[11px] text-rose-500 font-semibold shrink-0 ml-2 bg-rose-50 px-2 py-0.5 rounded-full">{table.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col" onClick={() => setSelectedId(null)}>
+    <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col" onClick={() => { setSelectedId(null); setMobileSheet(null); }}>
 
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 bg-white border-b border-stone-200 shadow-sm shrink-0" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-          {/* Mobile sidebar toggle */}
-          <button onClick={() => setSidebarOpen(v => !v)}
-            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-500 hover:border-stone-300 transition-colors text-base shrink-0">
-            ☰
-          </button>
           <button onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 hover:text-stone-700 hover:border-stone-300 transition-colors text-lg shrink-0">
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 hover:text-stone-700 hover:border-stone-300 transition-colors text-lg shrink-0">
             ←
           </button>
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-widest text-stone-400 hidden sm:block">Plan aranjament mese</p>
-            <p className="text-sm font-semibold text-stone-800 truncate">
-              <span className="hidden xs:inline">{event.clientName} · </span>
-              <span className="text-stone-400 font-normal">{event.date}</span>
-            </p>
+            <p className="text-sm font-semibold text-stone-800 truncate">{event.clientName} <span className="text-stone-400 font-normal hidden sm:inline">· {event.date}</span></p>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <span className="text-xs text-stone-400 hidden lg:block">
             {tables.length} mese · {totalGuests}/{totalSeats} locuri
           </span>
-          <p className="text-[10px] text-stone-300 hidden xl:block">Dublu-click pe masă pentru invitați</p>
           <button onClick={copyPublicLink}
-            className="hidden sm:block border border-stone-200 hover:border-rose-200 text-stone-500 hover:text-rose-600 px-3 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap">
-            {linkCopied ? '✓ Copiat!' : '⤢ Link'}
+            className="hidden sm:flex items-center gap-1.5 border border-stone-200 hover:border-rose-200 text-stone-500 hover:text-rose-600 px-3 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap">
+            {linkCopied ? '✓ Copiat!' : '⤢ Link public'}
           </button>
           <button onClick={handleSave} disabled={saving}
             className="bg-rose-700 hover:bg-rose-800 text-white px-3 sm:px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60 whitespace-nowrap">
-            {saving ? '...' : saved ? '✓' : 'Salvează'}
+            {saving ? '...' : saved ? '✓ Salvat' : 'Salvează'}
           </button>
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0 relative">
+      {/* ── Body: sidebar + canvas ── */}
+      <div className="flex flex-1 min-h-0 relative overflow-hidden">
 
-        {/* Mobile backdrop */}
-        {sidebarOpen && (
-          <div className="absolute inset-0 bg-black/30 z-10 md:hidden" onClick={() => setSidebarOpen(false)} />
-        )}
+        {/* ── Desktop sidebar (md+) ── */}
+        <div className="hidden md:flex w-56 bg-white border-r border-stone-200 flex-col shrink-0 overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <SidebarAddTable />
 
-        {/* ── Left sidebar ── */}
-        <div
-          className={`
-            absolute md:relative z-20 inset-y-0 left-0 h-full
-            w-64 md:w-56 bg-white border-r border-stone-200
-            flex flex-col shrink-0 overflow-y-auto
-            transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full md:translate-x-0 md:shadow-none'}
-          `}
-          onClick={e => e.stopPropagation()}
-        >
-
-          {/* Sidebar header (mobile) */}
-          <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-stone-100">
-            <p className="text-[10px] uppercase tracking-widest text-stone-500 font-semibold">Panou mese</p>
-            <div className="flex items-center gap-2">
-              <button onClick={copyPublicLink}
-                className="text-[10px] border border-stone-200 text-stone-500 px-2.5 py-1 rounded-lg uppercase tracking-wider transition-colors">
-                {linkCopied ? '✓' : '⤢ Link'}
-              </button>
-              <button onClick={() => setSidebarOpen(false)}
-                className="w-7 h-7 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 text-lg leading-none">
-                ×
-              </button>
-            </div>
-          </div>
-
-          {/* Add table */}
-          <div className="p-4 border-b border-stone-100 space-y-3">
-            <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Adaugă masă</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {(['round', 'rectangular'] as const).map(shape => (
-                <button key={shape} onClick={() => setNewShape(shape)}
-                  className={`py-2 rounded-xl border text-[10px] uppercase tracking-wider font-semibold transition-colors ${
-                    newShape === shape ? 'bg-rose-50 border-rose-200 text-rose-700' : 'border-stone-200 text-stone-400 hover:border-stone-300'
-                  }`}>
-                  {shape === 'round' ? '⭕ Rotundă' : '▬ Rect.'}
-                </button>
-              ))}
-            </div>
-            <div>
-              <div className="flex justify-between text-[10px] text-stone-400 mb-1">
-                <span className="uppercase tracking-wider">Scaune</span>
-                <span className="font-semibold text-stone-700">{newSeats}</span>
-              </div>
-              <input type="range" min={2} max={30} value={newSeats}
-                onChange={e => setNewSeats(Number(e.target.value))}
-                className="w-full accent-rose-600" />
-              <div className="flex justify-between text-[9px] text-stone-300 mt-0.5"><span>2</span><span>30</span></div>
-            </div>
-            <button onClick={addTable}
-              className="w-full bg-rose-700 hover:bg-rose-800 text-white py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
-              + Adaugă
-            </button>
-          </div>
-
-          {/* Selected table */}
           {selectedTable ? (
             <div className="p-4 space-y-3 border-b border-stone-100">
               <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Masă selectată</p>
@@ -358,55 +354,24 @@ export default function SeatingDashboard({ event, onClose }: Props) {
               </button>
             </div>
           ) : (
-            <div className="p-4 text-center">
+            <div className="p-4 text-center border-b border-stone-100">
               <p className="text-[11px] text-stone-300 italic">Click pe o masă pentru opțiuni.</p>
               <p className="text-[11px] text-stone-300 italic mt-1">Dublu-click pentru invitați.</p>
             </div>
           )}
 
-          {/* Guest search */}
-          <div className="p-4 border-b border-stone-100 space-y-2" onClick={e => e.stopPropagation()}>
-            <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Caută invitat</p>
-            <div className="relative">
-              <input
-                type="text"
-                value={guestSearch}
-                onChange={e => setGuestSearch(e.target.value)}
-                placeholder="Nume invitat..."
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors pr-7"
-              />
-              {guestSearch && (
-                <button onClick={() => setGuestSearch('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors text-lg leading-none">
-                  ×
-                </button>
-              )}
-            </div>
-            {guestSearch.trim().length >= 2 && (
-              <div className="space-y-1 max-h-40 overflow-y-auto">
-                {guestSearchResults.length === 0 ? (
-                  <p className="text-[10px] text-stone-300 italic text-center py-2">Niciun rezultat.</p>
-                ) : (
-                  guestSearchResults.map(({ guest, table }, i) => (
-                    <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); setSidebarOpen(false); }}
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition-colors text-left">
-                      <span className="text-xs text-stone-700 truncate">{guest}</span>
-                      <span className="text-[10px] text-rose-500 font-semibold shrink-0 ml-2 truncate">{table.name}</span>
-                    </button>
-                  ))
-                )}
-              </div>
-            )}
+          <div className="border-b border-stone-100">
+            <SidebarSearch />
           </div>
 
-          {/* Table list */}
           {tables.length > 0 && (
             <div className="p-3 space-y-1 flex-1 overflow-y-auto">
               <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold px-1 mb-2">
                 Toate mesele ({tables.length})
               </p>
               {tables.map(t => (
-                <button key={t.id} onClick={e => { e.stopPropagation(); setSelectedId(t.id); }}
+                <button key={t.id}
+                  onClick={e => { e.stopPropagation(); setSelectedId(t.id); }}
                   onDoubleClick={e => { e.stopPropagation(); setEditingTableId(t.id); setGuestInput(''); }}
                   className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition-colors ${
                     selectedId === t.id ? 'bg-rose-50 border border-rose-200 text-rose-700' : 'hover:bg-stone-50 text-stone-600'
@@ -431,12 +396,14 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             }}
             onPointerMove={handleCanvasPointerMove}
             onPointerUp={handleCanvasPointerUp}
-            onClick={() => setSelectedId(null)}
+            onClick={() => { setSelectedId(null); setMobileSheet(null); }}
           >
             {tables.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center space-y-2">
-                  <p className="text-stone-300 text-sm">Adaugă mese din panoul stâng</p>
+                <div className="text-center space-y-2 px-8">
+                  <p className="text-stone-300 text-sm">Nicio masă adăugată</p>
+                  <p className="text-stone-200 text-xs hidden md:block">Folosește panoul stâng pentru a adăuga mese</p>
+                  <p className="text-stone-200 text-xs md:hidden">Apasă <span className="font-semibold">+ Masă</span> de mai jos</p>
                 </div>
               </div>
             )}
@@ -452,7 +419,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                   cursor: dragging?.id === table.id && dragging.moved ? 'grabbing' : 'grab',
                   zIndex: selectedId === table.id ? 10 : 1,
                   filter: selectedId === table.id
-                    ? 'drop-shadow(0 4px 12px rgba(225,29,72,0.3))'
+                    ? 'drop-shadow(0 4px 12px rgba(225,29,72,0.35))'
                     : 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))',
                   transition: dragging?.id === table.id ? 'none' : 'filter 0.15s',
                 }}
@@ -468,59 +435,42 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             ))}
           </div>
 
-          {/* ── Guest editor modal (double-click) ── */}
+          {/* ── Guest editor modal ── */}
           {editingTable && (
-            <div
-              className="absolute inset-0 flex items-center justify-center z-30 bg-black/20"
-              onClick={() => setEditingTableId(null)}
-            >
+            <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/20" onClick={() => setEditingTableId(null)}>
               <div
                 className="bg-white rounded-2xl shadow-2xl w-[calc(100vw-1.5rem)] sm:w-80 flex flex-col max-h-[85vh] sm:max-h-[70vh] border border-stone-100"
                 onClick={e => e.stopPropagation()}
               >
-                {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
                   <div>
                     <p className="font-semibold text-stone-900">{editingTable.name}</p>
-                    <p className="text-[10px] text-stone-400 mt-0.5">
-                      {editingTable.guests.length} invitați · {editingTable.seats} scaune
-                    </p>
+                    <p className="text-[10px] text-stone-400 mt-0.5">{editingTable.guests.length} invitați · {editingTable.seats} scaune</p>
                   </div>
                   <button onClick={() => setEditingTableId(null)}
                     className="w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 hover:text-stone-700 transition-colors text-lg">
                     ×
                   </button>
                 </div>
-
-                {/* Guest list */}
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1.5">
                   {editingTable.guests.length === 0 ? (
                     <p className="text-[11px] text-stone-300 italic text-center py-4">Niciun invitat adăugat.</p>
-                  ) : (
-                    editingTable.guests.map((guest, i) => (
-                      <div key={i} className="flex items-center justify-between bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
-                        <span className="text-sm text-rose-800">{guest}</span>
-                        <button onClick={() => removeGuest(editingTable.id, i)}
-                          className="text-rose-300 hover:text-red-500 transition-colors text-lg leading-none ml-2 shrink-0">
-                          ×
-                        </button>
-                      </div>
-                    ))
-                  )}
+                  ) : editingTable.guests.map((guest, i) => (
+                    <div key={i} className="flex items-center justify-between bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
+                      <span className="text-sm text-rose-800">{guest}</span>
+                      <button onClick={() => removeGuest(editingTable.id, i)}
+                        className="text-rose-300 hover:text-red-500 transition-colors text-lg leading-none ml-2 shrink-0">×</button>
+                    </div>
+                  ))}
                 </div>
-
-                {/* Add guests */}
                 <div className="px-4 pb-4 pt-3 border-t border-stone-100 space-y-2">
-                  <p className="text-[10px] text-stone-400 uppercase tracking-wider">
-                    Adaugă invitați (separat prin Enter, virgulă sau punct și virgulă)
-                  </p>
+                  <p className="text-[10px] text-stone-400 uppercase tracking-wider">Adaugă (Enter, virgulă sau ; pentru mai mulți)</p>
                   <textarea
                     value={guestInput}
                     onChange={e => setGuestInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addGuests(editingTable.id); } }}
-                    placeholder="Ion Popescu&#10;Maria Ionescu&#10;..."
-                    rows={3}
-                    autoFocus
+                    placeholder={'Ion Popescu\nMaria Ionescu\n...'}
+                    rows={3} autoFocus
                     className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors resize-none"
                   />
                   <button onClick={() => addGuests(editingTable.id)} disabled={!guestInput.trim()}
@@ -532,6 +482,101 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+           MOBILE: bottom action bar + slide-up sheets  (md:hidden)
+          ══════════════════════════════════════════════════════ */}
+
+      {/* Mobile sheet backdrop */}
+      {mobileSheet && (
+        <div className="md:hidden absolute inset-0 bg-black/20 z-30" onClick={() => setMobileSheet(null)} />
+      )}
+
+      {/* Mobile slide-up sheet */}
+      {mobileSheet && (
+        <div
+          className="md:hidden absolute bottom-[72px] left-0 right-0 z-40 bg-white rounded-t-2xl shadow-2xl border-t border-stone-100 max-h-[60vh] overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between px-5 py-3 border-b border-stone-100">
+            <p className="text-[10px] uppercase tracking-widest text-stone-500 font-semibold">
+              {mobileSheet === 'add' ? 'Adaugă masă' : mobileSheet === 'search' ? 'Caută invitat' : 'Redenumește masa'}
+            </p>
+            <button onClick={() => setMobileSheet(null)}
+              className="w-7 h-7 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 text-lg leading-none">×</button>
+          </div>
+          {mobileSheet === 'add' && <SidebarAddTable />}
+          {mobileSheet === 'search' && <SidebarSearch />}
+          {mobileSheet === 'rename' && selectedTable && (
+            <div className="p-4 space-y-3">
+              <input
+                type="text" autoFocus
+                value={selectedTable.name}
+                onChange={e => renameSelected(e.target.value)}
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 focus:outline-none focus:border-rose-300 transition-colors"
+              />
+              <button onClick={() => setMobileSheet(null)}
+                className="w-full bg-rose-700 text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider">
+                Gata
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Mobile bottom action bar */}
+      <div className="md:hidden shrink-0 bg-white border-t border-stone-200 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] z-30" onClick={e => e.stopPropagation()}>
+        {selectedTable ? (
+          /* Table selected */
+          <div className="flex items-center gap-2 px-4 py-3">
+            <div className="flex-1 min-w-0 mr-1">
+              <p className="text-[9px] text-stone-400 uppercase tracking-wider">Selectat</p>
+              <p className="text-sm font-semibold text-stone-800 truncate">{selectedTable.name}</p>
+            </div>
+            <button onClick={() => { setEditingTableId(selectedTable.id); setGuestInput(''); }}
+              className="bg-rose-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider whitespace-nowrap">
+              Invitați
+            </button>
+            <button onClick={() => setMobileSheet('rename')}
+              className="w-11 h-10 border border-stone-200 text-stone-500 rounded-xl flex items-center justify-center text-sm"
+              title="Redenumește">
+              ✏️
+            </button>
+            <button onClick={deleteSelected}
+              className="w-11 h-10 border border-red-100 text-red-400 rounded-xl flex items-center justify-center text-base"
+              title="Șterge masa">
+              🗑
+            </button>
+            <button onClick={() => setSelectedId(null)}
+              className="w-11 h-10 border border-stone-200 text-stone-400 rounded-xl flex items-center justify-center text-xl leading-none"
+              title="Deselectează">
+              ×
+            </button>
+          </div>
+        ) : (
+          /* No selection: primary actions */
+          <div className="flex items-center gap-2 px-4 py-3">
+            <button onClick={() => setMobileSheet(v => v === 'add' ? null : 'add')}
+              className="flex-1 bg-rose-700 hover:bg-rose-800 text-white py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
+              + Masă
+            </button>
+            <button onClick={() => setMobileSheet(v => v === 'search' ? null : 'search')}
+              className="w-11 h-10 border border-stone-200 text-stone-500 hover:bg-stone-50 rounded-xl flex items-center justify-center text-base transition-colors"
+              title="Caută invitat">
+              🔍
+            </button>
+            <button onClick={copyPublicLink}
+              className="w-11 h-10 border border-stone-200 text-stone-500 hover:bg-stone-50 rounded-xl flex items-center justify-center text-sm transition-colors"
+              title="Copiază link public">
+              {linkCopied ? '✓' : '⤢'}
+            </button>
+            <button onClick={handleSave} disabled={saving}
+              className="bg-stone-800 hover:bg-stone-900 text-white px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60 whitespace-nowrap">
+              {saving ? '...' : saved ? '✓' : 'Salv.'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
