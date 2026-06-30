@@ -226,7 +226,7 @@ export default function SeatingPublicView({ eventId }: Props) {
             ) : (
               searchResults.map(({ guest, table }, i) => (
                 <button key={i} onClick={() => handleResultClick(table.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left ${
+                  className={`w-full flex items-center justify-between px-4 py-3.5 sm:py-3 rounded-xl border transition-all text-left ${
                     highlightedTableId === table.id
                       ? 'bg-rose-50 border-rose-200 shadow-sm'
                       : 'bg-white border-stone-100 hover:border-rose-100 hover:bg-rose-50/50'
@@ -280,7 +280,7 @@ export default function SeatingPublicView({ eventId }: Props) {
 
         {/* Canvas — read-only */}
         <div className="flex-1 relative rounded-2xl overflow-hidden border border-stone-100 shadow-sm"
-          style={{ height: 'calc(100vh - 320px)', minHeight: '480px' }}>
+          style={{ height: 'clamp(340px, calc(100vh - 320px), 900px)' }}>
           <div
             className="w-full h-full relative"
             style={{

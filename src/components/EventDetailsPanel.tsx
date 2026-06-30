@@ -191,8 +191,8 @@ export default function EventDetailsPanel({ eventId, onClose }: Props) {
   }, [eventId]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-6 px-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-0 sm:py-6 px-0 sm:px-4">
+      <div className="bg-white sm:rounded-3xl shadow-2xl w-full max-w-2xl min-h-screen sm:min-h-0">
 
         <div className="flex items-start justify-between p-6 border-b border-stone-100">
           <div>
@@ -218,7 +218,7 @@ export default function EventDetailsPanel({ eventId, onClose }: Props) {
           </div>
         ) : event ? (
           <div className="p-6 space-y-5">
-            <div className="flex border-b border-stone-100">
+            <div className="flex border-b border-stone-100 overflow-x-auto">
               {ADMIN_TABS.map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px ${
