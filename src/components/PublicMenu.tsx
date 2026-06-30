@@ -54,7 +54,7 @@ export default function PublicMenu() {
         </div>
       ) : (
         <div className="space-y-8">
-          {COURSES.map(({ key, label, hint, icon }, idx) => {
+          {COURSES.map(({ key, label, hint, icon }) => {
             const courseOptions = options.filter(o => o.course === key);
             if (courseOptions.length === 0) return null;
             return (
@@ -76,7 +76,7 @@ export default function PublicMenu() {
 
                 {/* Options grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {courseOptions.map((opt, i) => (
+                  {courseOptions.map((opt) => (
                     <div
                       key={opt.id}
                       className="bg-white border border-stone-100 rounded-2xl p-5 shadow-sm space-y-2 hover:border-rose-100 hover:shadow-md transition-all"

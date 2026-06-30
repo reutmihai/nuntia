@@ -110,7 +110,7 @@ function ViewProgram({ event }: { event: ConfirmedEvent }) {
   return (
     <div className="relative space-y-0">
       <div className="absolute left-[34px] top-5 bottom-5 w-px bg-rose-100" />
-      {items.map((item, idx) => (
+      {items.map((item) => (
         <div key={item.id} className="flex items-start gap-4 relative z-10 pb-3 last:pb-0">
           <div className="w-[68px] bg-rose-50 border border-rose-100 text-rose-700 font-mono text-xs font-semibold px-2 py-1.5 rounded-lg text-center shrink-0">
             {item.ora}
