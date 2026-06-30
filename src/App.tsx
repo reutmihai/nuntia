@@ -7,6 +7,7 @@ import PublicMenu from './components/PublicMenu';
 import { supabase } from './supabaseClient';
 import emailjs from '@emailjs/browser';
 import ClientPortal from './components/ClientPortal';
+import SeatingPublicView from './components/SeatingPublicView';
 import type { BookingRequest, ConfirmedEvent } from './types';
 
 export type { BookingRequest, ConfirmedEvent };
@@ -20,7 +21,8 @@ const EMAILJS = {
 };
 
 function App() {
-  const [viewMode, setViewMode] = useState<'public' | 'meniu' | 'portal' | 'admin'>('public');
+  const [viewMode, setViewMode] = useState<'public' | 'meniu' | 'portal' | 'admin' | 'mese'>('public');
+  const [meseEventId, setMeseEventId] = useState<string>('');
   const [adminSection, setAdminSection] = useState<'cereri' | 'evenimente' | 'meniuri'>('cereri');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
@@ -35,6 +37,8 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('code')) setViewMode('portal');
+    const mese = params.get('mese');
+    if (mese) { setMeseEventId(mese); setViewMode('mese'); }
   }, []);
 
   useEffect(() => {
@@ -247,6 +251,7 @@ function App() {
     meniu:  "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')",
     portal: "url('https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1920&q=85')",
     admin:  "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=85')",
+    mese:   "url('https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1920&q=85')",
   };
 
   return (
@@ -423,6 +428,8 @@ function App() {
             bookingRequests={bookingRequests}
             onAddRequest={handleAddRequest}
           />
+        ) : viewMode === 'mese' ? (
+          <SeatingPublicView eventId={meseEventId} />
         ) : viewMode === 'meniu' ? (
           <PublicMenu />
         ) : viewMode === 'portal' ? (

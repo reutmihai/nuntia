@@ -116,6 +116,7 @@ function RectTableSVG({ table, selected }: { table: SeatingTableLayout; selected
 
 interface Props { event: ConfirmedEvent; onClose: () => void; }
 interface DragState { id: string; offsetX: number; offsetY: number; moved: boolean; }
+interface GuestEntry { guest: string; table: SeatingTableLayout; }
 
 export default function SeatingDashboard({ event, onClose }: Props) {
   const [tables, setTables] = useState<SeatingTableLayout[]>([]);
@@ -127,6 +128,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   const [newSeats, setNewSeats] = useState(10);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [guestSearch, setGuestSearch] = useState('');
+  const [linkCopied, setLinkCopied] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const lastClickRef = useRef(0);
 
@@ -214,6 +217,19 @@ export default function SeatingDashboard({ event, onClose }: Props) {
     setTimeout(() => setSaved(false), 2500);
   };
 
+  const copyPublicLink = () => {
+    const url = `${window.location.origin}${window.location.pathname}?mese=${event.id}`;
+    navigator.clipboard.writeText(url).then(() => { setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2500); });
+  };
+
+  const guestSearchResults: GuestEntry[] = guestSearch.trim().length >= 2
+    ? tables.flatMap(t =>
+        t.guests
+          .filter(g => g.toLowerCase().includes(guestSearch.toLowerCase()))
+          .map(g => ({ guest: g, table: t }))
+      )
+    : [];
+
   const selectedTable = tables.find(t => t.id === selectedId) ?? null;
   const editingTable = tables.find(t => t.id === editingTableId) ?? null;
   const totalGuests = tables.reduce((s, t) => s + t.guests.length, 0);
@@ -239,6 +255,10 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             {tables.length} mese · {totalGuests}/{totalSeats} locuri ocupate
           </span>
           <p className="text-[10px] text-stone-300 hidden md:block">Dublu-click pe masă pentru invitați</p>
+          <button onClick={copyPublicLink}
+            className="border border-stone-200 hover:border-rose-200 text-stone-500 hover:text-rose-600 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap">
+            {linkCopied ? '✓ Copiat!' : '⤢ Link public'}
+          </button>
           <button onClick={handleSave} disabled={saving}
             className="bg-rose-700 hover:bg-rose-800 text-white px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60">
             {saving ? 'Se salvează...' : saved ? '✓ Salvat' : 'Salvează'}
@@ -305,6 +325,41 @@ export default function SeatingDashboard({ event, onClose }: Props) {
               <p className="text-[11px] text-stone-300 italic mt-1">Dublu-click pentru invitați.</p>
             </div>
           )}
+
+          {/* Guest search */}
+          <div className="p-4 border-b border-stone-100 space-y-2" onClick={e => e.stopPropagation()}>
+            <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Caută invitat</p>
+            <div className="relative">
+              <input
+                type="text"
+                value={guestSearch}
+                onChange={e => setGuestSearch(e.target.value)}
+                placeholder="Nume invitat..."
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors pr-7"
+              />
+              {guestSearch && (
+                <button onClick={() => setGuestSearch('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors text-lg leading-none">
+                  ×
+                </button>
+              )}
+            </div>
+            {guestSearch.trim().length >= 2 && (
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {guestSearchResults.length === 0 ? (
+                  <p className="text-[10px] text-stone-300 italic text-center py-2">Niciun rezultat.</p>
+                ) : (
+                  guestSearchResults.map(({ guest, table }, i) => (
+                    <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); }}
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition-colors text-left">
+                      <span className="text-xs text-stone-700 truncate">{guest}</span>
+                      <span className="text-[10px] text-rose-500 font-semibold shrink-0 ml-2 truncate">{table.name}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Table list */}
           {tables.length > 0 && (
