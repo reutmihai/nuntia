@@ -7,7 +7,7 @@ export interface SeatingTableLayout {
   y: number; // 0–100 percentage of canvas height
   shape: 'round' | 'rectangular';
   seats: number;
-  assignments: (string | null)[];
+  guests: string[];
 }
 
 export interface MenuOption {
