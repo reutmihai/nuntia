@@ -22,10 +22,22 @@ function clamp(v: number, lo: number, hi: number) { return Math.max(lo, Math.min
 
 // ─── SVG: Masă rotundă ────────────────────────────────────────────────────────
 
-function RoundTableSVG({ table, selected }: { table: SeatingTableLayout; selected: boolean }) {
+function RoundTableSVG({ table, selected, compact }: { table: SeatingTableLayout; selected: boolean; compact?: boolean }) {
+  const occupied = table.guests.length;
+  if (compact) {
+    const R = 19, SIZE = R * 2 + 4, C = SIZE / 2;
+    const label = table.name.length > 9 ? table.name.slice(0, 8) + '…' : table.name;
+    return (
+      <svg width={SIZE} height={SIZE} style={{ display: 'block', overflow: 'visible', pointerEvents: 'none' }}>
+        <circle cx={C} cy={C} r={R} fill="#fef2f2"
+          stroke={selected ? '#e11d48' : '#fca5a5'} strokeWidth={selected ? 2.5 : 1.5} />
+        <text x={C} y={C - 3.5} textAnchor="middle" dominantBaseline="middle" fontSize="6" fill="#9f1239" fontWeight="700">{label}</text>
+        <text x={C} y={C + 5} textAnchor="middle" dominantBaseline="middle" fontSize="5" fill="#c4b5a5">{occupied}/{table.seats}</text>
+      </svg>
+    );
+  }
   const TR = 22, SR = 7, DIST = TR + SR + 7;
   const SIZE = (DIST + SR + 5) * 2, C = SIZE / 2;
-  const occupied = table.guests.length;
   const label = table.name.length > 10 ? table.name.slice(0, 9) + '…' : table.name;
   return (
     <svg width={SIZE} height={SIZE} style={{ display: 'block', overflow: 'visible', pointerEvents: 'none' }}>
@@ -44,11 +56,23 @@ function RoundTableSVG({ table, selected }: { table: SeatingTableLayout; selecte
 
 // ─── SVG: Masă dreptunghiulară ────────────────────────────────────────────────
 
-function RectTableSVG({ table, selected }: { table: SeatingTableLayout; selected: boolean }) {
+function RectTableSVG({ table, selected, compact }: { table: SeatingTableLayout; selected: boolean; compact?: boolean }) {
+  const occupied = table.guests.length;
+  if (compact) {
+    const TW = 54, TH = 30;
+    const label = table.name.length > 10 ? table.name.slice(0, 9) + '…' : table.name;
+    return (
+      <svg width={TW} height={TH} style={{ display: 'block', overflow: 'visible', pointerEvents: 'none' }}>
+        <rect x={0} y={0} width={TW} height={TH} rx={5} fill="#fef2f2"
+          stroke={selected ? '#e11d48' : '#fca5a5'} strokeWidth={selected ? 2.5 : 1.5} />
+        <text x={TW / 2} y={TH / 2 - 3.5} textAnchor="middle" dominantBaseline="middle" fontSize="6" fill="#9f1239" fontWeight="700">{label}</text>
+        <text x={TW / 2} y={TH / 2 + 5} textAnchor="middle" dominantBaseline="middle" fontSize="5" fill="#c4b5a5">{occupied}/{table.seats}</text>
+      </svg>
+    );
+  }
   const SR = 7, PAD = SR + 7, topCount = Math.ceil(table.seats / 2), botCount = Math.floor(table.seats / 2);
   const TW = Math.max(Math.max(topCount, botCount, 1) * (SR * 2 + 9) + 10, 50);
   const TH = 38, TOTAL_H = TH + PAD * 2;
-  const occupied = table.guests.length;
   const label = table.name.length > 12 ? table.name.slice(0, 11) + '…' : table.name;
   const sx = (count: number, i: number) => (TW / (count + 1)) * (i + 1);
   return (
@@ -183,8 +207,12 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   // DOM element refs for direct style mutation during drag
   const tableElems = useRef<Map<string, HTMLDivElement>>(new Map());
   const canvasRef = useRef<HTMLDivElement>(null);
-  // Responsive scale: shrinks tables on small canvases so they don't crowd each other
-  const [tableScale, setTableScale] = useState(1);
+  const [canvasWidth, setCanvasWidth] = useState(700);
+  // compact = hide seat circles; scale = visual shrink applied via CSS transform
+  const compact = canvasWidth < 600;
+  const tableScale = compact
+    ? Math.min(1, Math.max(0.72, canvasWidth / 420))
+    : Math.min(1, canvasWidth / 700);
 
   useEffect(() => {
     supabase.from('confirmed_events').select('seating_layout').eq('id', event.id).single()
@@ -196,11 +224,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    const obs = new ResizeObserver(([entry]) => {
-      const w = entry.contentRect.width;
-      // Full size at 700px+; shrinks linearly down to 0.52 at ~375px
-      setTableScale(Math.min(1, Math.max(0.52, w / 700)));
-    });
+    const obs = new ResizeObserver(([entry]) => setCanvasWidth(entry.contentRect.width));
     obs.observe(canvasRef.current);
     return () => obs.disconnect();
   }, []);
@@ -467,8 +491,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                 onDoubleClick={e => handleTableDoubleClick(e, table)}
               >
                 {table.shape === 'round'
-                  ? <RoundTableSVG table={table} selected={selectedId === table.id} />
-                  : <RectTableSVG table={table} selected={selectedId === table.id} />
+                  ? <RoundTableSVG table={table} selected={selectedId === table.id} compact={compact} />
+                  : <RectTableSVG table={table} selected={selectedId === table.id} compact={compact} />
                 }
               </div>
             ))}
@@ -586,8 +610,10 @@ export default function SeatingDashboard({ event, onClose }: Props) {
               🔍
             </button>
             <button onClick={copyPublicLink}
-              className="w-11 h-10 border border-stone-200 text-stone-500 hover:bg-stone-50 rounded-xl flex items-center justify-center text-sm transition-colors" title="Copiază link public">
-              {linkCopied ? '✓' : '⤢'}
+              className={`flex items-center gap-1 px-3 h-10 border rounded-xl text-[10px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+                linkCopied ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : 'border-stone-200 text-stone-500 hover:bg-stone-50'
+              }`}>
+              {linkCopied ? '✓ Copiat' : '⤢ Link'}
             </button>
             <button onClick={handleSave} disabled={saving}
               className="bg-stone-800 hover:bg-stone-900 text-white px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-60 whitespace-nowrap">
