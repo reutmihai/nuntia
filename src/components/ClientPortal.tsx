@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import type { ConfirmedEvent, MenuData, MenuOption, ScheduleItem, CourseKey, SeatingTableLayout } from '../types';
 import SeatingDashboard from './SeatingDashboard';
@@ -26,13 +26,13 @@ function useCountdown(dateStr: string): TimeLeft {
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 sm:gap-2.5">
-      <div className="w-full bg-white border border-rose-100 rounded-xl sm:rounded-2xl px-1 sm:px-3 py-4 sm:py-6 text-center shadow-sm">
-        <span className="text-3xl sm:text-5xl lg:text-6xl font-extralight text-rose-700 tabular-nums leading-none">
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="w-full bg-white border border-rose-100 rounded-xl px-1 py-4 sm:py-6 text-center shadow-sm">
+        <span className="text-3xl sm:text-5xl font-light text-rose-700 tabular-nums leading-none">
           {String(value).padStart(2, '0')}
         </span>
       </div>
-      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-stone-400 font-semibold">{label}</span>
+      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.15em] text-stone-500 font-semibold">{label}</span>
     </div>
   );
 }
@@ -46,8 +46,8 @@ function Countdown({ dateStr }: { dateStr: string }) {
   );
   return (
     <div className="space-y-3">
-      <p className="text-[10px] uppercase tracking-[0.25em] text-stone-400 text-center font-semibold">Timp rămas până la nuntă</p>
-      <div className="grid grid-cols-4 gap-3 sm:gap-4">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500 text-center font-semibold">Timp rămas până la nuntă</p>
+      <div className="grid grid-cols-4 gap-2 sm:gap-4">
         <CountdownUnit value={days} label="Zile" />
         <CountdownUnit value={hours} label="Ore" />
         <CountdownUnit value={minutes} label="Minute" />
@@ -62,16 +62,13 @@ function Countdown({ dateStr }: { dateStr: string }) {
 function useSave(eventId: string, column: string) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
   const save = async (data: unknown) => {
     setSaving(true);
     try {
       await supabase.from('confirmed_events').update({ [column]: data }).eq('id', eventId);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
   return { save, saving, saved };
 }
@@ -118,12 +115,11 @@ function TabMeniu({ event }: { event: ConfirmedEvent }) {
 
   if (loadingOptions) return (
     <div className="py-12 text-center">
-      <p className="text-xs text-stone-300 uppercase tracking-widest animate-pulse">Se încarcă meniul...</p>
+      <p className="text-xs text-stone-400 uppercase tracking-widest animate-pulse">Se încarcă meniul...</p>
     </div>
   );
 
   const hasAnyOptions = menuOptions.length > 0;
-
   const selectOption = (key: CourseKey, title: string) =>
     setMenu(prev => ({ ...prev, [key]: prev[key] === title ? '' : title }));
 
@@ -131,8 +127,8 @@ function TabMeniu({ event }: { event: ConfirmedEvent }) {
     <div className="space-y-4">
       {!hasAnyOptions ? (
         <div className="bg-white border border-dashed border-stone-200 rounded-2xl p-10 text-center space-y-2">
-          <p className="text-stone-400 text-sm">Opțiunile de meniu</p>
-          <p className="text-stone-300 text-xs leading-relaxed">
+          <p className="text-stone-600 text-sm">Opțiunile de meniu</p>
+          <p className="text-stone-500 text-xs leading-relaxed">
             Echipa noastră va adăuga în curând variantele de meniu din care poți alege.
           </p>
         </div>
@@ -141,24 +137,24 @@ function TabMeniu({ event }: { event: ConfirmedEvent }) {
           const courseOptions = menuOptions.filter(o => o.course === key);
           const selected = menu[key];
           return (
-            <div key={key} className="bg-white border border-stone-100 rounded-2xl p-5 space-y-3 shadow-sm">
+            <div key={key} className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-600 text-sm font-light shrink-0">
+                <div className="w-7 h-7 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 text-xs font-semibold shrink-0">
                   {idx + 1}
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-stone-500 font-semibold">{label}</p>
-                  <p className="text-[10px] text-stone-300">{hint}</p>
+                  <p className="text-xs uppercase tracking-wider text-stone-700 font-semibold">{label}</p>
+                  <p className="text-[11px] text-stone-400 mt-0.5">{hint}</p>
                 </div>
                 {selected && (
-                  <span className="ml-auto text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
+                  <span className="ml-auto text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-semibold">
                     ✓ Ales
                   </span>
                 )}
               </div>
 
               {courseOptions.length === 0 ? (
-                <p className="text-[11px] text-stone-300 italic px-1">Va fi completat de echipă.</p>
+                <p className="text-xs text-stone-400 italic px-1">Va fi completat de echipă.</p>
               ) : (
                 <div className="space-y-2">
                   {courseOptions.map(opt => {
@@ -166,26 +162,28 @@ function TabMeniu({ event }: { event: ConfirmedEvent }) {
                     return (
                       <label
                         key={opt.id}
-                        className={`flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all ${
+                        className={`flex items-start gap-3 px-4 py-3.5 rounded-xl border cursor-pointer transition-all ${
                           isSelected
-                            ? 'bg-rose-50 border-rose-200'
-                            : 'bg-stone-50 border-stone-200 hover:border-stone-300 hover:bg-white'
+                            ? 'bg-emerald-50 border-emerald-200'
+                            : 'bg-stone-50 border-stone-200 hover:bg-white hover:border-stone-300'
                         }`}
                       >
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                          isSelected ? 'border-rose-500 bg-rose-500' : 'border-stone-300'
+                          isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-stone-300'
                         }`}>
                           {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                         <input type="radio" className="sr-only" checked={isSelected} onChange={() => selectOption(key, opt.title)} />
-                        <div className="flex-1">
-                          <p className={`text-sm font-medium ${isSelected ? 'text-rose-800' : 'text-stone-700'}`}>{opt.title}</p>
-                          {opt.description && <p className="text-[11px] text-stone-400 mt-0.5">{opt.description}</p>}
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-semibold leading-snug ${isSelected ? 'text-stone-900' : 'text-stone-700'}`}>
+                            {opt.title}
+                          </p>
+                          {opt.description && (
+                            <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{opt.description}</p>
+                          )}
                         </div>
                         {opt.pricePerPerson !== undefined && (
-                          <span className={`text-[11px] font-semibold shrink-0 px-2 py-0.5 rounded-lg ${
-                            isSelected ? 'text-rose-600 bg-rose-100 border border-rose-200' : 'text-emerald-600 bg-emerald-50 border border-emerald-100'
-                          }`}>
+                          <span className="text-xs font-semibold shrink-0 px-2 py-1 rounded-lg bg-stone-100 border border-stone-200 text-stone-600">
                             {opt.pricePerPerson} € / pers
                           </span>
                         )}
@@ -201,7 +199,7 @@ function TabMeniu({ event }: { event: ConfirmedEvent }) {
 
       {hasAnyOptions && (
         <button onClick={() => save(menu)} disabled={saving}
-          className="w-full py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs transition-colors disabled:opacity-60 bg-rose-700 text-white hover:bg-rose-800">
+          className="w-full py-4 rounded-xl font-semibold uppercase tracking-widest text-xs transition-colors disabled:opacity-60 bg-stone-900 text-white hover:bg-stone-800">
           {saving ? 'Se salvează...' : saved ? '✓ Selecție salvată' : 'Confirmă Selecția'}
         </button>
       )}
@@ -231,23 +229,22 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
     <div className="space-y-4">
       {items.length === 0 ? (
         <div className="bg-white border border-dashed border-stone-200 rounded-2xl p-10 text-center">
-          <p className="text-stone-300 text-xs">Niciun moment adăugat încă.</p>
+          <p className="text-stone-500 text-sm">Niciun moment adăugat încă.</p>
+          <p className="text-stone-400 text-xs mt-1">Adaugă primul moment al zilei mai jos.</p>
         </div>
       ) : (
         <div className="relative space-y-0">
           <div className="absolute left-[34px] top-5 bottom-5 w-px bg-rose-100 -z-0" />
           {items.map((item, idx) => (
-            <div key={item.id} className="flex items-start gap-4 relative z-10 pb-3 last:pb-0">
-              <div className="flex flex-col items-center shrink-0 gap-0">
-                <div className="w-[68px] bg-rose-50 border border-rose-100 text-rose-700 font-mono text-xs font-semibold px-2 py-1.5 rounded-lg text-center">
-                  {item.ora}
-                </div>
+            <div key={item.id} className="flex items-start gap-3 sm:gap-4 relative z-10 pb-3 last:pb-0">
+              <div className="w-16 sm:w-[68px] bg-rose-50 border border-rose-100 text-rose-700 font-mono text-xs font-semibold px-2 py-2 rounded-lg text-center shrink-0">
+                {item.ora}
               </div>
-              <div className="flex-1 bg-white border border-stone-100 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between gap-3 mt-0.5">
-                <p className="text-sm text-stone-800">{item.descriere}</p>
+              <div className="flex-1 min-w-0 bg-white border border-stone-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between gap-2 mt-0.5">
+                <p className="text-sm text-stone-800 leading-snug break-words min-w-0">{item.descriere}</p>
                 <button
                   onClick={() => setItems(prev => prev.filter((_, i) => i !== idx))}
-                  className="text-stone-300 hover:text-red-400 transition-colors text-xl leading-none shrink-0"
+                  className="text-stone-300 hover:text-red-400 transition-colors text-xl leading-none shrink-0 ml-1"
                 >
                   ×
                 </button>
@@ -257,14 +254,15 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
         </div>
       )}
 
-      <div className="bg-stone-50 border border-stone-100 rounded-2xl p-4 space-y-2">
-        <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold mb-3">Adaugă moment</p>
+      {/* Add moment — stacked layout prevents overflow on narrow screens */}
+      <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3">
+        <p className="text-xs uppercase tracking-wider text-stone-600 font-semibold">Adaugă moment</p>
         <div className="flex gap-2">
           <input
             type="time"
             value={newOra}
             onChange={e => setNewOra(e.target.value)}
-            className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 transition-colors w-28 shrink-0"
+            className="w-28 shrink-0 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-stone-400 transition-colors"
           />
           <input
             type="text"
@@ -272,22 +270,22 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
             onChange={e => setNewDescriere(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addItem()}
             placeholder="ex: Sosirea invitaților"
-            className="flex-1 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
+            className="flex-1 min-w-0 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-stone-400 placeholder:text-stone-400 transition-colors"
           />
-          <button
-            onClick={addItem}
-            disabled={!newOra || !newDescriere.trim()}
-            className="bg-rose-700 text-white px-4 py-2.5 rounded-xl text-sm font-light hover:bg-rose-800 transition-colors disabled:opacity-40"
-          >
-            +
-          </button>
         </div>
+        <button
+          onClick={addItem}
+          disabled={!newOra || !newDescriere.trim()}
+          className="w-full bg-stone-900 text-white py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider hover:bg-stone-800 transition-colors disabled:opacity-40"
+        >
+          + Adaugă
+        </button>
       </div>
 
       <button
         onClick={() => save(items)}
         disabled={saving}
-        className="w-full py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs transition-colors disabled:opacity-60 bg-rose-700 text-white hover:bg-rose-800"
+        className="w-full py-4 rounded-xl font-semibold uppercase tracking-widest text-xs transition-colors disabled:opacity-60 bg-stone-900 text-white hover:bg-stone-800"
       >
         {saving ? 'Se salvează...' : saved ? '✓ Salvat' : 'Salvează Programul'}
       </button>
@@ -295,32 +293,30 @@ function TabProgram({ event }: { event: ConfirmedEvent }) {
   );
 }
 
-// ─── Tab: Detalii (overview) ──────────────────────────────────────────────────
+// ─── Tab: Detalii ─────────────────────────────────────────────────────────────
 
 function TabDetalii({ event }: { event: ConfirmedEvent }) {
   const totalEstimate = event.pricePerMeniu ? event.pricePerMeniu * event.guests : null;
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Data', value: event.date, mono: true },
           { label: 'Salon', value: event.salonName },
           { label: 'Invitați', value: `${event.guests} pers.` },
-          { label: 'Preț Meniu', value: event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'Nespecificat', emerald: true },
-        ].map(({ label, value, mono, emerald }) => (
-          <div key={label} className="bg-white border border-stone-100 rounded-2xl p-5 space-y-1.5 shadow-sm">
-            <p className="text-[10px] uppercase tracking-widest text-stone-400">{label}</p>
-            <p className={`font-semibold text-sm ${mono ? 'font-mono text-stone-900' : emerald ? 'text-emerald-600' : 'text-stone-900'}`}>
-              {value}
-            </p>
+          { label: 'Preț Meniu', value: event.pricePerMeniu ? `${event.pricePerMeniu} € / pers` : 'Nespecificat' },
+        ].map(({ label, value, mono }) => (
+          <div key={label} className="bg-white border border-stone-200 rounded-2xl p-4 space-y-1.5 shadow-sm">
+            <p className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">{label}</p>
+            <p className={`font-semibold text-sm text-stone-900 ${mono ? 'font-mono' : ''}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {totalEstimate && (
-        <div className="bg-white border border-stone-100 rounded-2xl p-5 flex justify-between items-center shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 flex justify-between items-center shadow-sm">
           <div className="space-y-0.5">
-            <p className="text-[10px] uppercase tracking-widest text-stone-400">Estimare Totală</p>
+            <p className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">Estimare Totală</p>
             <p className="text-xs text-stone-400">{event.guests} pers. × {event.pricePerMeniu} €</p>
           </div>
           <p className="text-2xl font-light text-stone-900">{totalEstimate.toLocaleString('ro-RO')} €</p>
@@ -329,10 +325,10 @@ function TabDetalii({ event }: { event: ConfirmedEvent }) {
 
       {event.extraServices.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[10px] uppercase tracking-widest text-stone-400">Servicii Extra Incluse</p>
+          <p className="text-[10px] uppercase tracking-wider text-stone-600 font-semibold">Servicii Extra Incluse</p>
           <div className="flex flex-wrap gap-2">
             {event.extraServices.map((s, i) => (
-              <span key={i} className="bg-rose-50 border border-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-medium">
+              <span key={i} className="bg-stone-100 border border-stone-200 text-stone-700 px-3 py-1.5 rounded-xl text-xs font-medium">
                 {s}
               </span>
             ))}
@@ -340,16 +336,16 @@ function TabDetalii({ event }: { event: ConfirmedEvent }) {
         </div>
       )}
 
-      <div className="bg-stone-50 border border-stone-100 rounded-2xl p-5 space-y-3 text-xs">
-        <p className="text-[10px] uppercase tracking-widest text-stone-400">Contact</p>
-        <div className="flex justify-between">
-          <span className="text-stone-400">Telefon</span>
-          <span className="text-stone-800 font-mono">{event.phone}</span>
+      <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 space-y-3">
+        <p className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">Contact</p>
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-stone-500">Telefon</span>
+          <span className="text-stone-900 font-mono font-semibold">{event.phone}</span>
         </div>
         {event.email && (
-          <div className="flex justify-between">
-            <span className="text-stone-400">Email</span>
-            <span className="text-stone-800">{event.email}</span>
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-stone-500">Email</span>
+            <span className="text-stone-900 text-xs sm:text-sm break-all">{event.email}</span>
           </div>
         )}
       </div>
@@ -361,11 +357,11 @@ function TabDetalii({ event }: { event: ConfirmedEvent }) {
 
 type TabId = 'detalii' | 'meniu' | 'program' | 'mese';
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: 'detalii', label: 'Detalii' },
-  { id: 'meniu', label: 'Meniu' },
-  { id: 'program', label: 'Programul Zilei' },
-  { id: 'mese', label: 'Aranjament Mese' },
+const TABS: { id: TabId; label: string; mobileLabel: string }[] = [
+  { id: 'detalii', label: 'Detalii', mobileLabel: 'Detalii' },
+  { id: 'meniu', label: 'Meniu', mobileLabel: 'Meniu' },
+  { id: 'program', label: 'Programul Zilei', mobileLabel: 'Program' },
+  { id: 'mese', label: 'Aranjament Mese', mobileLabel: 'Mese' },
 ];
 
 export default function ClientPortal() {
@@ -375,13 +371,6 @@ export default function ClientPortal() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('detalii');
-  const tabsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!tabsRef.current) return;
-    const active = tabsRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
-    active?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }, [activeTab]);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
@@ -389,25 +378,14 @@ export default function ClientPortal() {
   }, []);
 
   const lookupEvent = async (code: string) => {
-    setIsLoading(true);
-    setError('');
-    setHasSearched(true);
+    setIsLoading(true); setError(''); setHasSearched(true);
     try {
       const { data, error: dbError } = await supabase
-        .from('confirmed_events')
-        .select('*')
-        .eq('access_code', code.trim())
-        .single();
-
+        .from('confirmed_events').select('*').eq('access_code', code.trim()).single();
       if (dbError || !data) { setEvent(null); setError('Cod de acces invalid sau inexistent.'); return; }
-
       setEvent({
-        id: data.id,
-        date: data.date,
-        clientName: data.client_name,
-        guests: data.guests,
-        phone: data.phone,
-        email: data.email || '',
+        id: data.id, date: data.date, clientName: data.client_name,
+        guests: data.guests, phone: data.phone, email: data.email || '',
         pricePerMeniu: data.price_per_meniu,
         salonName: data.salon_name || 'Grand Salon',
         extraServices: data.extra_services || [],
@@ -428,90 +406,85 @@ export default function ClientPortal() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-32">
-      <p className="text-sm uppercase tracking-widest text-stone-400 animate-pulse">Se verifică codul de acces...</p>
+      <p className="text-sm uppercase tracking-widest text-stone-500 animate-pulse">Se verifică codul de acces...</p>
     </div>
   );
 
   if (!event) return (
-    <div className="max-w-md mx-auto py-16">
-      <div className="text-center mb-10 space-y-3">
+    <div className="max-w-md mx-auto py-12 sm:py-16">
+      <div className="text-center mb-8 space-y-3">
         <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-3xl">
           💍
         </div>
-        <h2 className="text-2xl font-extralight uppercase tracking-widest text-stone-900">Portal Clienți</h2>
-        <p className="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">
+        <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">Portal Clienți</h2>
+        <p className="text-sm text-stone-500 leading-relaxed max-w-xs mx-auto">
           Spațiul tău privat pentru a urmări și organiza toate detaliile nunții.
         </p>
       </div>
 
       <form onSubmit={e => { e.preventDefault(); if (codeInput.trim()) lookupEvent(codeInput.trim()); }}
-        className="bg-white border border-stone-100 p-8 rounded-3xl space-y-5 shadow-xl">
-        <div className="flex items-start gap-3 bg-rose-50/70 border border-rose-100 rounded-2xl px-4 py-3.5">
+        className="bg-white border border-stone-200 p-6 sm:p-8 rounded-3xl space-y-5 shadow-xl">
+        <div className="flex items-start gap-3 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-3.5">
           <span className="text-rose-400 mt-0.5 shrink-0">✉️</span>
-          <p className="text-[11px] text-stone-500 leading-relaxed">
+          <p className="text-xs text-stone-600 leading-relaxed">
             Codul de acces a fost trimis pe adresa ta de email imediat după confirmare.
           </p>
         </div>
         <div className="space-y-1.5">
-          <label className="text-[10px] uppercase tracking-wider text-stone-500 block mb-2">Cod de Acces</label>
+          <label className="text-xs uppercase tracking-wider text-stone-600 font-semibold block mb-2">Cod de Acces</label>
           <input
             type="text" value={codeInput} onChange={e => setCodeInput(e.target.value)}
             placeholder="ex: andrei-maria-x7k2p9ab"
-            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3.5 text-sm text-stone-900 font-mono focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
+            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3.5 text-sm text-stone-900 font-mono focus:outline-none focus:border-stone-400 placeholder:text-stone-400 transition-colors"
           />
-          {hasSearched && error && <p className="text-red-500 text-xs pt-1">{error}</p>}
+          {hasSearched && error && <p className="text-red-500 text-sm pt-1">{error}</p>}
         </div>
         <button type="submit"
-          className="w-full bg-rose-700 text-white py-3.5 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-rose-800 transition-colors">
+          className="w-full bg-stone-900 text-white py-4 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors">
           Accesează Portalul
         </button>
-        <p className="text-center text-[10px] text-stone-300 pt-1">Nu ai primit codul? Contactează-ne la recepție.</p>
+        <p className="text-center text-xs text-stone-400 pt-1">Nu ai primit codul? Contactează-ne la recepție.</p>
       </form>
     </div>
   );
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8 py-4 sm:py-8">
+    <div className="max-w-2xl mx-auto space-y-5 sm:space-y-8 py-4 sm:py-8">
 
-      {/* Header */}
-      <div className="space-y-1">
-        <h2 className="text-3xl font-extralight uppercase tracking-widest text-stone-900">{event.clientName}</h2>
-        <p className="text-xs text-stone-400">Bun venit! Mai jos găsești și poți organiza toate detaliile evenimentului tău.</p>
+      {/* ── Welcome header ── */}
+      <div className="space-y-1 px-1">
+        <p className="text-[10px] uppercase tracking-widest text-stone-500 font-semibold">Bun venit,</p>
+        <h2 className="text-2xl sm:text-3xl font-semibold text-stone-900 leading-tight">{event.clientName}</h2>
+        <p className="text-sm text-stone-500 leading-relaxed mt-1">
+          Mai jos găsești și poți organiza toate detaliile evenimentului tău.
+        </p>
       </div>
 
-      {/* Countdown */}
-      <div className="bg-gradient-to-br from-rose-50 to-amber-50/40 border border-rose-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+      {/* ── Countdown ── */}
+      <div className="bg-gradient-to-br from-rose-50 to-amber-50/40 border border-rose-100 rounded-3xl p-5 sm:p-8 shadow-sm">
         <Countdown dateStr={event.date} />
       </div>
 
-      {/* Tabs */}
+      {/* ── Tabs ── */}
       <div className="space-y-5">
-        {/* Tab nav: sticky under the app header, hides native scrollbar, gradient fades at edges */}
-        <div className="sticky top-14 z-20 -mx-4 sm:-mx-0 bg-white/95 backdrop-blur-sm rounded-none sm:rounded-2xl">
-          <div className="relative">
-            <div
-              ref={tabsRef}
-              className="flex overflow-x-auto scrollbar-hide border-b border-stone-100 scroll-smooth px-1"
-            >
-              {TABS.map(tab => (
-                <button
-                  key={tab.id}
-                  data-active={activeTab === tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 sm:px-5 py-3 text-[11px] uppercase tracking-widest font-semibold whitespace-nowrap transition-colors border-b-2 -mb-px flex-shrink-0 ${
-                    activeTab === tab.id
-                      ? 'border-rose-600 text-rose-700'
-                      : 'border-transparent text-stone-400 hover:text-stone-700'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-            {/* Left fade — indicates more tabs to the left */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/95 to-transparent" />
-            {/* Right fade — indicates more tabs to the right */}
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/95 to-transparent" />
+
+        {/* Segmented control — all 4 always visible, no scrolling needed */}
+        <div className="sticky top-14 z-20 -mx-4 sm:mx-0 px-3 sm:px-0 pt-2 pb-3 bg-white/95 backdrop-blur-sm">
+          <div className="grid grid-cols-4 gap-1 bg-stone-100 rounded-2xl p-1">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-2.5 sm:py-3 rounded-xl transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-white text-stone-900 shadow-sm font-semibold'
+                    : 'text-stone-500 hover:text-stone-700 font-medium'
+                }`}
+              >
+                <span className="block sm:hidden text-[10px] uppercase tracking-wide">{tab.mobileLabel}</span>
+                <span className="hidden sm:block text-[11px] uppercase tracking-wide">{tab.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
