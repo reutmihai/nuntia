@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import type { ConfirmedEvent } from '../types';
 import EventDetailsPanel from './EventDetailsPanel';
+import AdminCalendar from './AdminCalendar';
+
+type ViewMode = 'list' | 'calendar';
 
 interface ConfirmedEventsProps {
   confirmedEvents: ConfirmedEvent[];
@@ -10,6 +13,7 @@ interface ConfirmedEventsProps {
 export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: ConfirmedEventsProps) {
   const [cancelingId, setCancelingId] = useState<string | null>(null);
   const [managingEventId, setManagingEventId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -22,14 +26,37 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
 
   return (
     <div className="bg-white border border-stone-100 p-6 rounded-3xl space-y-6 shadow-lg">
-      <div>
-        <h3 className="text-lg uppercase tracking-wider font-light text-stone-900">
-          Evenimente Confirmate ({upcoming.length})
-        </h3>
-        <p className="text-xs text-stone-400 mt-1">
-          Contracte semnate și date blocate definitiv în calendar.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-lg uppercase tracking-wider font-light text-stone-900">
+            Evenimente Confirmate ({upcoming.length})
+          </h3>
+          <p className="text-xs text-stone-400 mt-1">
+            Contracte semnate și date blocate definitiv în calendar.
+          </p>
+        </div>
+        <div className="flex items-center border border-stone-200 rounded-xl overflow-hidden shrink-0">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-2 text-[10px] uppercase tracking-widest font-semibold transition-colors ${
+              viewMode === 'list' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:bg-stone-50'
+            }`}
+          >
+            Listă
+          </button>
+          <button
+            onClick={() => setViewMode('calendar')}
+            className={`px-3 py-2 text-[10px] uppercase tracking-widest font-semibold transition-colors ${
+              viewMode === 'calendar' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:bg-stone-50'
+            }`}
+          >
+            Calendar
+          </button>
+        </div>
       </div>
+
+      {viewMode === 'calendar' && <AdminCalendar confirmedEvents={confirmedEvents} />}
+      {viewMode === 'list' && (
 
       <div className="overflow-x-auto rounded-2xl border border-stone-100">
         <table className="w-full text-left border-collapse text-xs">
@@ -138,6 +165,7 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
           </tbody>
         </table>
       </div>
+      )}
 
       {managingEventId && (
         <EventDetailsPanel
