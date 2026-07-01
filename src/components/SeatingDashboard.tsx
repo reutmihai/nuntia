@@ -124,7 +124,7 @@ function AddTableForm({ newShape, setNewShape, newSeats, setNewSeats, addTable }
         </div>
         <input type="range" min={2} max={30} value={newSeats}
           onChange={e => setNewSeats(Number(e.target.value))} className="w-full accent-rose-600" />
-        <div className="flex justify-between text-[9px] text-stone-300 mt-0.5"><span>2</span><span>30</span></div>
+        <div className="flex justify-between text-[9px] text-stone-500 mt-0.5"><span>2</span><span>30</span></div>
       </div>
       <button onClick={addTable}
         className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
@@ -154,16 +154,16 @@ function SearchForm({ guestSearch, setGuestSearch, results, onSelectTable, autoF
           value={guestSearch}
           onChange={e => setGuestSearch(e.target.value)}
           placeholder="Caută invitat după nume..."
-          className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 pr-8"
+          className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-500 pr-8"
         />
         {guestSearch && (
-          <button onClick={() => setGuestSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 text-xl leading-none">×</button>
+          <button onClick={() => setGuestSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-500 text-xl leading-none">×</button>
         )}
       </div>
       {guestSearch.trim().length >= 2 && (
         <div className="space-y-1 max-h-52 overflow-y-auto">
           {results.length === 0
-            ? <p className="text-[11px] text-stone-300 italic text-center py-3">Niciun rezultat.</p>
+            ? <p className="text-[11px] text-stone-500 italic text-center py-3">Niciun rezultat.</p>
             : results.map(({ guest, table }, i) => (
               <button key={i} onClick={() => onSelectTable(table.id)}
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-colors text-left">
@@ -416,8 +416,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             </div>
           ) : (
             <div className="p-4 text-center border-b border-stone-100">
-              <p className="text-[11px] text-stone-300 italic">Click pe masă pentru opțiuni.</p>
-              <p className="text-[11px] text-stone-300 italic mt-1">Dublu-click pentru invitați.</p>
+              <p className="text-[11px] text-stone-500 italic">Click pe masă pentru opțiuni.</p>
+              <p className="text-[11px] text-stone-500 italic mt-1">Dublu-click pentru invitați.</p>
             </div>
           )}
 
@@ -462,7 +462,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             {tables.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center space-y-2 px-8">
-                  <p className="text-stone-300 text-sm">Nicio masă adăugată</p>
+                  <p className="text-stone-500 text-sm">Nicio masă adăugată</p>
                   <p className="text-stone-200 text-xs hidden md:block">Folosește panoul stâng</p>
                   <p className="text-stone-200 text-xs md:hidden">Apasă <span className="font-semibold">+ Masă</span> de mai jos</p>
                 </div>
@@ -512,7 +512,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                 </div>
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1.5">
                   {editingTable.guests.length === 0
-                    ? <p className="text-[11px] text-stone-300 italic text-center py-4">Niciun invitat adăugat.</p>
+                    ? <p className="text-[11px] text-stone-500 italic text-center py-4">Niciun invitat adăugat.</p>
                     : editingTable.guests.map((guest, i) => (
                       <div key={i} className="flex items-center justify-between bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
                         <span className="text-sm text-rose-800">{guest}</span>
@@ -527,7 +527,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                   <textarea value={guestInput} onChange={e => setGuestInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addGuests(editingTable.id); } }}
                     placeholder={'Ion Popescu\nMaria Ionescu\n...'} rows={3} autoFocus
-                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 resize-none" />
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-500 resize-none" />
                   <button onClick={() => addGuests(editingTable.id)} disabled={!guestInput.trim()}
                     className="w-full bg-rose-700 hover:bg-rose-800 text-white py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors disabled:opacity-40">
                     Adaugă

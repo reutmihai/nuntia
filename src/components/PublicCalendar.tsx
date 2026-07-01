@@ -147,7 +147,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         <div className="absolute inset-0 bg-white/65 backdrop-blur-[2px]" />
         <div className="relative z-10 text-center space-y-5 px-5 sm:px-8 py-16 sm:py-24">
           <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
-          <h1 className="text-3xl sm:text-5xl font-extralight uppercase tracking-widest text-stone-900 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-semibold text-stone-900 leading-tight">
             Locul unde încep <span className="font-semibold text-rose-700">Poveștile</span>
           </h1>
           <p className="text-sm sm:text-base text-stone-500 font-light leading-relaxed max-w-xl mx-auto">
@@ -314,9 +314,9 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                 >
                   <span className="text-xs sm:text-sm font-semibold">{day}</span>
                   {/* Status label desktop */}
-                  <span className={`hidden sm:inline text-[9px] uppercase tracking-wider font-semibold ${
+                  <span className={`hidden sm:inline text-[10px] uppercase tracking-wider font-semibold ${
                     isPast
-                      ? 'text-stone-300'
+                      ? 'text-stone-400'
                       : isOcupat
                         ? 'text-rose-400'
                         : isPending
@@ -347,7 +347,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                 </div>
                 <div>
                   <span className="text-xs text-stone-600 font-medium block leading-none">{label}</span>
-                  <span className="text-[9px] text-stone-400 hidden sm:block mt-0.5">{hint}</span>
+                  <span className="text-[11px] text-stone-500 hidden sm:block mt-0.5">{hint}</span>
                 </div>
               </div>
             ))}
@@ -376,7 +376,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Numele Cuplului (Miri)</label>
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Numele Cuplului (Miri)</label>
                 <input
                   type="text" required value={clientNameInput} onChange={(e) => setClientNameInput(e.target.value)}
                   placeholder="Ex: Popescu Andrei & Maria"
@@ -386,7 +386,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Telefon</label>
+                  <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Telefon</label>
                   <input
                     type="tel" required value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)}
                     placeholder="07xxxxxxxx"
@@ -394,7 +394,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Email</label>
+                  <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Email</label>
                   <input
                     type="email" required value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
                     placeholder="exemplu@gmail.com"
@@ -404,7 +404,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Nr. Anticipat Invitați</label>
                 <input
                   type="number" value={guestsInput} onChange={(e) => setGuestsInput(Number(e.target.value))}
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:border-rose-300 text-sm transition-colors"
@@ -412,7 +412,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Salon Selectat</label>
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Salon Selectat</label>
                 <div className="w-full bg-rose-50 border border-rose-100 rounded-xl px-4 py-3 text-rose-700 font-semibold text-sm">
                   {activeSalonFilter}
                 </div>
@@ -420,7 +420,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Preferință Meniu</label>
+                  <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Preferință Meniu</label>
                   <select
                     value={menuInput} onChange={(e) => setMenuInput(e.target.value)}
                     className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-3 text-stone-800 text-xs cursor-pointer focus:outline-none focus:border-rose-300 transition-colors"
@@ -431,7 +431,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                   </select>
                 </div>
                 <div>
-                  <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Buget Estimat</label>
+                  <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Buget Estimat</label>
                   <select
                     value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
                     className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-3 text-stone-800 text-xs cursor-pointer focus:outline-none focus:border-rose-300 transition-colors"
@@ -444,7 +444,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">Servicii Extra Opționale</label>
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-2 font-semibold">Servicii Extra Opționale</label>
                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 space-y-2.5">
                   {SERVICII_EXTRA.map(service => (
                     <label key={service.id} className="flex items-start gap-3 cursor-pointer select-none group">
@@ -463,7 +463,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
               </div>
 
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-1.5 font-semibold">Solicitări speciale (Opțional)</label>
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-1.5 font-semibold">Solicitări speciale (Opțional)</label>
                 <textarea
                   value={messageInput} onChange={(e) => setMessageInput(e.target.value)}
                   placeholder="Detalii suplimentare..." rows={2}

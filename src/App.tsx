@@ -357,7 +357,7 @@ function App() {
                 <p className="text-[13px] font-bold tracking-[0.28em] text-stone-900 uppercase group-hover:text-rose-700 transition-colors leading-none">
                   {RESTAURANT.name}
                 </p>
-                <p className="text-[9px] tracking-[0.22em] text-stone-400 uppercase mt-0.5 hidden sm:block">
+                <p className="text-[11px] tracking-wider text-stone-500 uppercase mt-0.5 hidden sm:block">
                   {RESTAURANT.location} · Venue & Events
                 </p>
               </div>
@@ -511,7 +511,7 @@ function App() {
 
             <form onSubmit={handleConfirmApproval} className="space-y-5">
               <div>
-                <label className="block text-stone-400 uppercase tracking-widest text-[9px] mb-2 font-semibold">
+                <label className="block text-stone-600 uppercase tracking-wider text-xs mb-2 font-semibold">
                   Preț Negociat Meniu (€ / persoană)
                 </label>
                 <div className="relative">
@@ -540,13 +540,13 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setApprovingRequest(null)}
-                  className="flex-1 bg-white border border-stone-200 hover:bg-stone-50 text-stone-600 py-3.5 rounded-xl uppercase tracking-widest text-[9px] font-semibold transition-colors"
+                  className="flex-1 bg-white border border-stone-200 hover:bg-stone-50 text-stone-600 py-3.5 rounded-xl uppercase tracking-wider text-xs font-semibold transition-colors"
                 >
                   Anulează
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-rose-700 text-white hover:bg-rose-800 py-3.5 rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors"
+                  className="flex-1 bg-rose-700 text-white hover:bg-rose-800 py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-colors"
                 >
                   Confirmă și Rezervă
                 </button>
