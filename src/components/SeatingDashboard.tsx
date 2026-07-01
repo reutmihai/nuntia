@@ -183,6 +183,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   // DOM element refs for direct style mutation during drag
   const tableElems = useRef<Map<string, HTMLDivElement>>(new Map());
   const canvasRef = useRef<HTMLDivElement>(null);
+  // Responsive scale: shrinks tables on small canvases so they don't crowd each other
+  const [tableScale, setTableScale] = useState(1);
 
   useEffect(() => {
     supabase.from('confirmed_events').select('seating_layout').eq('id', event.id).single()
@@ -191,6 +193,17 @@ export default function SeatingDashboard({ event, onClose }: Props) {
         setTables(raw.map(migrateTable));
       });
   }, [event.id]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const obs = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      // Full size at 700px+; shrinks linearly down to 0.52 at ~375px
+      setTableScale(Math.min(1, Math.max(0.52, w / 700)));
+    });
+    obs.observe(canvasRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   // ─── Drag: all refs, zero React re-renders ────────────────────────────────
 
@@ -440,7 +453,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
                   position: 'absolute',
                   left: `${table.x}%`,
                   top: `${table.y}%`,
-                  transform: 'translate(-50%, -50%)',
+                  transform: `translate(-50%, -50%) scale(${tableScale})`,
                   cursor: 'grab',
                   zIndex: selectedId === table.id ? 10 : 1,
                   filter: selectedId === table.id
