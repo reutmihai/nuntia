@@ -93,7 +93,7 @@ export default function ConfirmedEvents({ confirmedEvents, onCancelEvent }: Conf
                           ))}
                         </div>
                       ) : (
-                        <span className="text-stone-300 italic text-[11px]">—</span>
+                        <span className="text-stone-400 italic text-[11px]">—</span>
                       )}
                     </td>
 

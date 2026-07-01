@@ -42,7 +42,7 @@ export default function PublicMenu() {
     <div className="max-w-3xl mx-auto space-y-10 py-4 sm:py-8">
       <div className="text-center space-y-3">
         <p className="text-[10px] uppercase tracking-[0.3em] text-rose-500 font-semibold">Ballroom · Suceava</p>
-        <h2 className="text-3xl font-extralight uppercase tracking-widest text-stone-900">Meniu Nuntă</h2>
+        <h2 className="text-3xl font-semibold text-stone-900">Meniu Nuntă</h2>
         <p className="text-xs text-stone-400 max-w-sm mx-auto leading-relaxed">
           Descoperă variantele noastre de meniu. Clienții confirmați pot selecta preferințele direct din portalul personal.
         </p>
@@ -50,7 +50,7 @@ export default function PublicMenu() {
 
       {!hasAnyOptions ? (
         <div className="bg-white border border-dashed border-stone-200 rounded-3xl p-16 text-center">
-          <p className="text-stone-300 text-sm">Meniul va fi disponibil în curând.</p>
+          <p className="text-stone-500 text-sm">Meniul va fi disponibil în curând.</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -90,7 +90,7 @@ export default function PublicMenu() {
                         )}
                       </div>
                       {opt.description && (
-                        <p className="text-xs text-stone-400 leading-relaxed">{opt.description}</p>
+                        <p className="text-xs text-stone-600 leading-relaxed">{opt.description}</p>
                       )}
                     </div>
                   ))}
@@ -102,7 +102,7 @@ export default function PublicMenu() {
       )}
 
       <div className="text-center pt-4">
-        <p className="text-[10px] text-stone-300 uppercase tracking-widest">
+        <p className="text-[10px] text-stone-500 uppercase tracking-widest">
           Prețurile sunt orientative și pot fi negociate la semnarea contractului.
         </p>
       </div>

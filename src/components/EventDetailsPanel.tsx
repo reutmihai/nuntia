@@ -62,7 +62,7 @@ function ViewMeniu({ event }: { event: ConfirmedEvent }) {
     <div className="space-y-4">
       {!hasSelections ? (
         <div className="bg-stone-50 border border-dashed border-stone-200 rounded-2xl p-10 text-center">
-          <p className="text-stone-300 text-xs">Clientul nu a selectat niciun meniu încă.</p>
+          <p className="text-stone-500 text-xs">Clientul nu a selectat niciun meniu încă.</p>
         </div>
       ) : (
         COURSES.map(({ key, label, hint }, idx) => {
@@ -76,7 +76,7 @@ function ViewMeniu({ event }: { event: ConfirmedEvent }) {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">{label}</p>
-                  <p className="text-[10px] text-stone-300">{hint}</p>
+                  <p className="text-[10px] text-stone-500">{hint}</p>
                 </div>
               </div>
               {selected ? (
@@ -88,7 +88,7 @@ function ViewMeniu({ event }: { event: ConfirmedEvent }) {
                   <span className="text-emerald-500 text-lg shrink-0">✓</span>
                 </div>
               ) : (
-                <p className="text-[11px] text-stone-300 italic px-1">Neselectat.</p>
+                <p className="text-[11px] text-stone-500 italic px-1">Neselectat.</p>
               )}
             </div>
           );
@@ -104,7 +104,7 @@ function ViewProgram({ event }: { event: ConfirmedEvent }) {
   const items = event.scheduleData ?? [];
   if (items.length === 0) return (
     <div className="bg-stone-50 border border-dashed border-stone-200 rounded-2xl p-10 text-center">
-      <p className="text-stone-300 text-xs">Clientul nu a completat programul zilei încă.</p>
+      <p className="text-stone-500 text-xs">Clientul nu a completat programul zilei încă.</p>
     </div>
   );
   return (
@@ -132,7 +132,7 @@ function ViewMese({ event }: { event: ConfirmedEvent }) {
 
   if (tables.length === 0) return (
     <div className="bg-stone-50 border border-dashed border-stone-200 rounded-2xl p-10 text-center">
-      <p className="text-stone-300 text-xs">Clientul nu a completat aranjamentul meselor încă.</p>
+      <p className="text-stone-500 text-xs">Clientul nu a completat aranjamentul meselor încă.</p>
     </div>
   );
 
@@ -197,7 +197,7 @@ export default function EventDetailsPanel({ eventId, onClose }: Props) {
         <div className="flex items-start justify-between p-6 border-b border-stone-100">
           <div>
             <p className="text-[10px] uppercase tracking-widest text-stone-400 mb-1">Vizualizare eveniment</p>
-            <h3 className="text-xl font-extralight uppercase tracking-wider text-stone-900">
+            <h3 className="text-xl font-light uppercase tracking-wider text-stone-900">
               {loading ? '...' : event?.clientName}
             </h3>
             {!loading && event && (

@@ -120,7 +120,7 @@ export default function AdminMeniuri() {
               {/* Options list */}
               <div className="space-y-2">
                 {courseOptions.length === 0 && (
-                  <p className="text-[11px] text-stone-300 italic px-1">Nicio opțiune adăugată.</p>
+                  <p className="text-[11px] text-stone-500 italic px-1">Nicio opțiune adăugată.</p>
                 )}
                 {courseOptions.map(opt => (
                   <div key={opt.id} className="flex items-start justify-between gap-3 bg-stone-50 border border-stone-100 rounded-xl px-3 py-2.5">
@@ -138,7 +138,7 @@ export default function AdminMeniuri() {
                       )}
                       <button
                         onClick={() => handleDelete(opt.id)}
-                        className="text-stone-300 hover:text-red-400 transition-colors text-xl leading-none"
+                        className="text-stone-500 hover:text-red-400 transition-colors text-xl leading-none"
                       >
                         ×
                       </button>
@@ -155,7 +155,7 @@ export default function AdminMeniuri() {
                     value={form.title}
                     onChange={e => setForms(prev => ({ ...prev, [key]: { ...prev[key], title: e.target.value } }))}
                     placeholder="Denumire (ex: Ciorbă de burtă) *"
-                    className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
+                    className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-500 transition-colors"
                     autoFocus
                   />
                   <input
@@ -163,7 +163,7 @@ export default function AdminMeniuri() {
                     value={form.description}
                     onChange={e => setForms(prev => ({ ...prev, [key]: { ...prev[key], description: e.target.value } }))}
                     placeholder="Descriere (opțional)"
-                    className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
+                    className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-500 transition-colors"
                   />
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -174,7 +174,7 @@ export default function AdminMeniuri() {
                         value={form.pricePerPerson}
                         onChange={e => setForms(prev => ({ ...prev, [key]: { ...prev[key], pricePerPerson: e.target.value } }))}
                         placeholder="Preț / pers. (opțional)"
-                        className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 transition-colors"
+                        className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-500 transition-colors"
                       />
                       {form.pricePerPerson && (
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400">€</span>
