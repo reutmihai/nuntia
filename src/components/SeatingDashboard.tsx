@@ -70,10 +70,92 @@ function RectTableSVG({ table, selected }: { table: SeatingTableLayout; selected
   );
 }
 
+// ─── Sub-forms (module-level so React never unmounts them on parent re-render) ─
+
+interface AddTableFormProps {
+  newShape: 'round' | 'rectangular';
+  setNewShape: (s: 'round' | 'rectangular') => void;
+  newSeats: number;
+  setNewSeats: (n: number) => void;
+  addTable: () => void;
+}
+
+function AddTableForm({ newShape, setNewShape, newSeats, setNewSeats, addTable }: AddTableFormProps) {
+  return (
+    <div className="p-4 space-y-3">
+      <div className="grid grid-cols-2 gap-1.5">
+        {(['round', 'rectangular'] as const).map(shape => (
+          <button key={shape} onClick={() => setNewShape(shape)}
+            className={`py-2.5 rounded-xl border text-[11px] uppercase tracking-wider font-semibold transition-colors ${
+              newShape === shape ? 'bg-rose-50 border-rose-200 text-rose-700' : 'border-stone-200 text-stone-400 hover:border-stone-300'
+            }`}>
+            {shape === 'round' ? '⭕ Rotundă' : '▬ Rect.'}
+          </button>
+        ))}
+      </div>
+      <div>
+        <div className="flex justify-between text-[10px] text-stone-400 mb-1">
+          <span className="uppercase tracking-wider">Scaune</span>
+          <span className="font-semibold text-stone-700">{newSeats}</span>
+        </div>
+        <input type="range" min={2} max={30} value={newSeats}
+          onChange={e => setNewSeats(Number(e.target.value))} className="w-full accent-rose-600" />
+        <div className="flex justify-between text-[9px] text-stone-300 mt-0.5"><span>2</span><span>30</span></div>
+      </div>
+      <button onClick={addTable}
+        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
+        + Adaugă masă
+      </button>
+    </div>
+  );
+}
+
+interface GuestEntry { guest: string; table: SeatingTableLayout; }
+
+interface SearchFormProps {
+  guestSearch: string;
+  setGuestSearch: (s: string) => void;
+  results: GuestEntry[];
+  onSelectTable: (tableId: string) => void;
+  autoFocus?: boolean;
+}
+
+function SearchForm({ guestSearch, setGuestSearch, results, onSelectTable, autoFocus }: SearchFormProps) {
+  return (
+    <div className="p-4 space-y-2">
+      <div className="relative">
+        <input
+          type="text"
+          autoFocus={autoFocus}
+          value={guestSearch}
+          onChange={e => setGuestSearch(e.target.value)}
+          placeholder="Caută invitat după nume..."
+          className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 pr-8"
+        />
+        {guestSearch && (
+          <button onClick={() => setGuestSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 text-xl leading-none">×</button>
+        )}
+      </div>
+      {guestSearch.trim().length >= 2 && (
+        <div className="space-y-1 max-h-52 overflow-y-auto">
+          {results.length === 0
+            ? <p className="text-[11px] text-stone-300 italic text-center py-3">Niciun rezultat.</p>
+            : results.map(({ guest, table }, i) => (
+              <button key={i} onClick={() => onSelectTable(table.id)}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-colors text-left">
+                <span className="text-sm text-stone-700 truncate">{guest}</span>
+                <span className="text-[11px] text-rose-500 font-semibold shrink-0 ml-2 bg-rose-50 px-2 py-0.5 rounded-full">{table.name}</span>
+              </button>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 interface Props { event: ConfirmedEvent; onClose: () => void; }
-interface GuestEntry { guest: string; table: SeatingTableLayout; }
 
 // Drag state lives entirely in refs — zero React re-renders during drag
 interface DragRef {
@@ -228,61 +310,13 @@ export default function SeatingDashboard({ event, onClose }: Props) {
   const totalGuests = tables.reduce((s, t) => s + t.guests.length, 0);
   const totalSeats = tables.reduce((s, t) => s + t.seats, 0);
 
-  // ─── Shared sub-forms (used in desktop sidebar + mobile sheets) ───────────
-
-  const AddTableForm = () => (
-    <div className="p-4 space-y-3">
-      <div className="grid grid-cols-2 gap-1.5">
-        {(['round', 'rectangular'] as const).map(shape => (
-          <button key={shape} onClick={() => setNewShape(shape)}
-            className={`py-2.5 rounded-xl border text-[11px] uppercase tracking-wider font-semibold transition-colors ${
-              newShape === shape ? 'bg-rose-50 border-rose-200 text-rose-700' : 'border-stone-200 text-stone-400 hover:border-stone-300'
-            }`}>
-            {shape === 'round' ? '⭕ Rotundă' : '▬ Rect.'}
-          </button>
-        ))}
-      </div>
-      <div>
-        <div className="flex justify-between text-[10px] text-stone-400 mb-1">
-          <span className="uppercase tracking-wider">Scaune</span>
-          <span className="font-semibold text-stone-700">{newSeats}</span>
-        </div>
-        <input type="range" min={2} max={30} value={newSeats}
-          onChange={e => setNewSeats(Number(e.target.value))} className="w-full accent-rose-600" />
-        <div className="flex justify-between text-[9px] text-stone-300 mt-0.5"><span>2</span><span>30</span></div>
-      </div>
-      <button onClick={addTable}
-        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors">
-        + Adaugă masa
-      </button>
-    </div>
-  );
-
-  const SearchForm = () => (
-    <div className="p-4 space-y-2">
-      <div className="relative">
-        <input type="text" autoFocus value={guestSearch} onChange={e => setGuestSearch(e.target.value)}
-          placeholder="Caută invitat după nume..."
-          className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none focus:border-rose-300 placeholder:text-stone-300 pr-8" />
-        {guestSearch && (
-          <button onClick={() => setGuestSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 text-xl leading-none">×</button>
-        )}
-      </div>
-      {guestSearch.trim().length >= 2 && (
-        <div className="space-y-1 max-h-52 overflow-y-auto">
-          {guestSearchResults.length === 0
-            ? <p className="text-[11px] text-stone-300 italic text-center py-3">Niciun rezultat.</p>
-            : guestSearchResults.map(({ guest, table }, i) => (
-              <button key={i} onClick={() => { setSelectedId(table.id); setGuestSearch(''); setMobileSheet(null); }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-colors text-left">
-                <span className="text-sm text-stone-700 truncate">{guest}</span>
-                <span className="text-[11px] text-rose-500 font-semibold shrink-0 ml-2 bg-rose-50 px-2 py-0.5 rounded-full">{table.name}</span>
-              </button>
-            ))}
-        </div>
-      )}
-    </div>
-  );
+  const addTableFormProps: AddTableFormProps = { newShape, setNewShape, newSeats, setNewSeats, addTable };
+  const searchFormProps = {
+    guestSearch,
+    setGuestSearch,
+    results: guestSearchResults,
+    onSelectTable: (tableId: string) => { setSelectedId(tableId); setGuestSearch(''); setMobileSheet(null); },
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col" onClick={() => { setSelectedId(null); setMobileSheet(null); }}>
@@ -322,7 +356,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
 
           <div className="p-3 pb-0 border-b border-stone-100">
             <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold px-1 pb-3">Adaugă masă</p>
-            <AddTableForm />
+            <AddTableForm {...addTableFormProps} />
           </div>
 
           {selectedTable ? (
@@ -352,7 +386,7 @@ export default function SeatingDashboard({ event, onClose }: Props) {
 
           <div className="border-b border-stone-100">
             <p className="text-[10px] uppercase tracking-widest text-stone-400 font-semibold px-4 pt-4 pb-1">Caută invitat</p>
-            <SearchForm />
+            <SearchForm {...searchFormProps} />
           </div>
 
           {tables.length > 0 && (
@@ -486,8 +520,8 @@ export default function SeatingDashboard({ event, onClose }: Props) {
             <button onClick={() => setMobileSheet(null)}
               className="w-7 h-7 flex items-center justify-center rounded-full border border-stone-200 text-stone-400 text-lg leading-none">×</button>
           </div>
-          {mobileSheet === 'add' && <AddTableForm />}
-          {mobileSheet === 'search' && <SearchForm />}
+          {mobileSheet === 'add' && <AddTableForm {...addTableFormProps} />}
+          {mobileSheet === 'search' && <SearchForm {...searchFormProps} autoFocus />}
           {mobileSheet === 'rename' && selectedTable && (
             <div className="p-4 space-y-3">
               <input type="text" autoFocus value={selectedTable.name} onChange={e => renameSelected(e.target.value)}
