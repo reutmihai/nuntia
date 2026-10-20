@@ -32,7 +32,7 @@ export default function PublicMenu() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
-      <p className="text-xs text-stone-400 uppercase tracking-widest animate-pulse">Se încarcă meniul...</p>
+      <p className="text-xs text-stone-600 uppercase tracking-widest animate-pulse">Se încarcă meniul...</p>
     </div>
   );
 
@@ -41,9 +41,9 @@ export default function PublicMenu() {
   return (
     <div className="max-w-3xl mx-auto space-y-10 py-4 sm:py-8">
       <div className="text-center space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-rose-500 font-semibold">Ballroom · Suceava</p>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-rose-700 font-bold">Ballroom · Suceava</p>
         <h2 className="text-3xl font-semibold text-stone-900">Meniu Nuntă</h2>
-        <p className="text-xs text-stone-400 max-w-sm mx-auto leading-relaxed">
+        <p className="text-sm text-stone-700 max-w-sm mx-auto leading-relaxed">
           Descoperă variantele noastre de meniu. Clienții confirmați pot selecta preferințele direct din portalul personal.
         </p>
       </div>
@@ -102,7 +102,7 @@ export default function PublicMenu() {
       )}
 
       <div className="text-center pt-4">
-        <p className="text-[10px] text-stone-500 uppercase tracking-widest">
+        <p className="text-[10px] text-stone-700 font-medium uppercase tracking-widest">
           Prețurile sunt orientative și pot fi negociate la semnarea contractului.
         </p>
       </div>

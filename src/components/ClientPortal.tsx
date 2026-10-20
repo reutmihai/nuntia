@@ -417,7 +417,7 @@ export default function ClientPortal() {
           💍
         </div>
         <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">Portal Clienți</h2>
-        <p className="text-sm text-stone-500 leading-relaxed max-w-xs mx-auto">
+        <p className="text-sm text-stone-700 leading-relaxed max-w-xs mx-auto">
           Spațiul tău privat pentru a urmări și organiza toate detaliile nunții.
         </p>
       </div>
