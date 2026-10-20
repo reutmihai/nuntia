@@ -144,13 +144,14 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1920&q=85')" }}
         />
-        <div className="absolute inset-0 bg-white/65 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-[3px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.75)_0%,rgba(255,255,255,0)_70%)]" />
         <div className="relative z-10 text-center space-y-5 px-5 sm:px-8 py-16 sm:py-24">
-          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-rose-600 font-semibold">Ballroom — Suceava</p>
-          <h1 className="text-3xl sm:text-5xl font-semibold text-stone-900 leading-tight">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-rose-700 font-bold">Ballroom — Suceava</p>
+          <h1 className="text-3xl sm:text-5xl font-semibold text-stone-900 leading-tight text-shadow-[0_1px_12px_rgb(255_255_255_/_0.9)]">
             Locul unde încep <span className="font-semibold text-rose-700">Poveștile</span>
           </h1>
-          <p className="text-sm sm:text-base text-stone-500 font-light leading-relaxed max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-stone-700 font-normal leading-relaxed max-w-xl mx-auto">
             Alege salonul dorit, verifică disponibilitatea în timp real și configurează o cerere de ofertă personalizată.
           </p>
           <button
@@ -166,7 +167,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
       <div className="space-y-8">
         <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
           <div className="w-1 h-5 bg-rose-600 rounded-full" />
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Saloane Disponibile</h2>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700">Saloane Disponibile</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {SALOANE.map((salon) => (
@@ -177,7 +178,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
                   alt={salon.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg">
+                <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-md">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-white">{salon.theme}</span>
                 </div>
               </div>
@@ -207,7 +208,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
       <div className="space-y-8">
         <div className="border-b border-stone-100 pb-4 flex items-center gap-3">
           <div className="w-1 h-5 bg-rose-600 rounded-full" />
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Efecte & Servicii Opționale</h2>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700">Efecte & Servicii Opționale</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {SERVICII_EXTRA.map((service) => (
@@ -234,7 +235,7 @@ export default function PublicCalendar({ confirmedEvents, bookingRequests, onAdd
         <div className="border-b border-stone-100 pb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex items-center gap-3">
             <div className="w-1 h-5 bg-rose-600 rounded-full" />
-            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">Verifică disponibilitate calendar</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700">Verifică disponibilitate calendar</h2>
           </div>
           <div className="flex w-full sm:w-auto bg-stone-100 p-1 border border-stone-200 rounded-xl">
             {SALOANE.map(s => (

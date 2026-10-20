@@ -256,10 +256,10 @@ function App() {
 
   return (
     <div
-      className="w-full min-h-screen text-stone-800 antialiased font-sans relative pb-12"
+      className="w-full min-h-screen text-stone-800 antialiased font-sans relative isolate pb-12"
       style={{ backgroundImage: BG_IMAGES[viewMode], backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
     >
-      {/* Overlay alb pentru lizibilitate — diferit per view */}
+      {/* Overlay alb pentru lizibilitate — diferit per view (`isolate` pe părinte îl ține deasupra imaginii) */}
       <div className={`fixed inset-0 -z-10 transition-colors duration-700 ${
         viewMode === 'public' ? 'bg-white/88' : viewMode === 'portal' ? 'bg-rose-50/92' : 'bg-stone-50/93'
       }`} />
@@ -372,7 +372,7 @@ function App() {
                   className={`relative px-5 py-2 rounded-xl text-[11px] font-medium uppercase tracking-wider transition-all duration-200 ${
                     viewMode === mode
                       ? 'bg-white text-stone-700 shadow-sm border border-stone-200/80'
-                      : 'text-stone-400 hover:text-stone-600 hover:bg-white/50'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/70'
                   }`}
                 >
                   {label}
